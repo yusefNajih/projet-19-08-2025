@@ -141,7 +141,9 @@
   }
 }
 
-
+.separtor{
+  margin: 8px;
+}
 
 /* Styles pour le générateur de contrat */
 .contract-generator {

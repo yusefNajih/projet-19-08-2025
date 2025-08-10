@@ -65,7 +65,7 @@ Cette solution moderne combine une interface utilisateur intuitive avec un backe
 
 #### 📋 **Contrats Automatisés**
 - Génération de contrats PDF personnalisés
-- Signatures électroniques intégrées
+- Signatures électroniques intégrée
 - Templates de contrats modifiables
 - Archivage automatique des contrats
 
