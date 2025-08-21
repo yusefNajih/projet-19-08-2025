@@ -19,9 +19,7 @@ app.use(limiter);
 
 // --- CORS configuration ---
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production' 
-    ? ['https://your-frontend-domain.com'] 
-    : ['http://localhost:3000', 'http://localhost:5173'],
+  origin: 'http://localhost:5174',
   credentials: true
 }));
 
@@ -49,6 +47,7 @@ app.use('/api/billing', require('./routes/billing'));
 app.use('/api/contracts', require('./routes/contracts')); // 📌 ICI on ajoute notre route contrats
 app.use('/api/maintenance', require('./routes/maintenance'));
 app.use('/api/dashboard', require('./routes/dashboard'));
+app.use('/api/invoice', require('./routes/invoice'));
 
 // --- Health check endpoint ---
 app.get('/api/health', (req, res) => {

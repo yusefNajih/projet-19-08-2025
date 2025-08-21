@@ -4,6 +4,7 @@ import Layout from './components/Layout';
 import Login from './components/Login';
 import Dashboard from './components/Dashboard';
 import VehicleManagement from './components/VehicleManagement';
+import VehicleAdminTable from './components/VehicleAdminTable';
 import ClientManagement from './components/ClientManagement';
 import ReservationManagement from './components/ReservationManagement';
 import ContractGenerator from './components/ContractGenerator';
@@ -15,6 +16,11 @@ function App() {
   const [currentPage, setCurrentPage] = useState('dashboard');
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  // Vehicle refresh flag for cross-component update
+  const [vehicleRefreshFlag, setVehicleRefreshFlag] = useState(0);
+
+  // Function to trigger vehicle list refresh
+  const triggerVehicleRefresh = () => setVehicleRefreshFlag(f => f + 1);
 
   // Check for existing authentication on app load
   useEffect(() => {
@@ -54,11 +60,13 @@ function App() {
       case 'dashboard':
         return <Dashboard />;
       case 'vehicles':
-        return <VehicleManagement />;
+        return <VehicleManagement vehicleRefreshFlag={vehicleRefreshFlag} />;
+      case 'vehicle-admin':
+        return <VehicleAdminTable />;
       case 'clients':
         return <ClientManagement />;
       case 'reservations':
-        return <ReservationManagement />;
+        return <ReservationManagement triggerVehicleRefresh={triggerVehicleRefresh} />;
       case 'billing':
         return <div>Facturation (à implémenter)</div>;
       case 'contracts':
@@ -68,7 +76,7 @@ function App() {
       case 'reports':
         return <div>Rapports (à implémenter)</div>;
       case 'settings':
-        return <div>Paramètres (à implémenter)</div>;
+        return null;
       default:
         return <Dashboard />;
     }

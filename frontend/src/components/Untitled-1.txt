@@ -1,0 +1,13 @@
+import html2pdf from "html2pdf.js";
+
+const element = document.getElementById("contract-content"); // ou la ref de ton contrat
+html2pdf()
+  .set({
+    margin: 0.5,
+    filename: "contrat.pdf",
+    image: { type: "jpeg", quality: 0.98 },
+    html2canvas: { scale: 2 },
+    jsPDF: { unit: "in", format: "a4", orientation: "portrait" }
+  })
+  .from(element)
+  .save();

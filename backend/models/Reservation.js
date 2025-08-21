@@ -134,8 +134,8 @@ reservationSchema.index({ status: 1 });
 reservationSchema.index({ startDate: 1, endDate: 1 });
 
 // Pre-save middleware to generate reservation number
-reservationSchema.pre('save', async function(next) {
-  if (this.isNew && !this.reservationNumber) {
+reservationSchema.pre('validate', async function(next) {
+  if (!this.reservationNumber) {
     const count = await this.constructor.countDocuments();
     const year = new Date().getFullYear();
     this.reservationNumber = `RES-${year}-${String(count + 1).padStart(6, '0')}`;

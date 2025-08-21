@@ -1,0 +1,8 @@
+@media print {
+  .contract-section {
+    page-break-inside: avoid;
+  }
+  .contract-preview {
+    page-break-after: always;
+  }
+}

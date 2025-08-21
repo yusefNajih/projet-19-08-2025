@@ -99,6 +99,7 @@ router.post('/', auth, [
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+      console.error('[RESERVATION][VALIDATION] Erreurs express-validator:', errors.array());
       return res.status(400).json({ errors: errors.array() });
     }
 
@@ -113,37 +114,44 @@ router.post('/', auth, [
     const now = new Date();
 
     if (start >= end) {
+      console.error('[RESERVATION][VALIDATION] Date de fin avant date de début:', { startDate, endDate });
       return res.status(400).json({ message: 'End date must be after start date' });
     }
 
     if (start < now) {
+      console.error('[RESERVATION][VALIDATION] Date de début dans le passé:', { startDate });
       return res.status(400).json({ message: 'Start date cannot be in the past' });
     }
 
     // Check if client exists and is eligible
     const client = await Client.findById(clientId);
     if (!client) {
+      console.error('[RESERVATION][VALIDATION] Client introuvable:', clientId);
       return res.status(404).json({ message: 'Client not found' });
     }
 
     if (!client.isEligibleForRental()) {
+      const reasons = [
+        client.status !== 'active' ? `Client status: ${client.status}` : null,
+        client.licenseExpiryDate <= new Date() ? 'License expired' : null,
+        client.age < 21 ? 'Client under 21 years old' : null
+      ].filter(Boolean);
+      console.error('[RESERVATION][VALIDATION] Client non éligible:', { clientId, reasons });
       return res.status(400).json({ 
         message: 'Client is not eligible for rental',
-        reasons: [
-          client.status !== 'active' ? `Client status: ${client.status}` : null,
-          client.licenseExpiryDate <= new Date() ? 'License expired' : null,
-          client.age < 21 ? 'Client under 21 years old' : null
-        ].filter(Boolean)
+        reasons
       });
     }
 
     // Check if vehicle exists and is available
     const vehicle = await Vehicle.findById(vehicleId);
     if (!vehicle) {
+      console.error('[RESERVATION][VALIDATION] Véhicule introuvable:', vehicleId);
       return res.status(404).json({ message: 'Vehicle not found' });
     }
 
     if (vehicle.status !== 'available') {
+      console.error('[RESERVATION][VALIDATION] Véhicule non disponible:', { vehicleId, status: vehicle.status });
       return res.status(400).json({ 
         message: `Vehicle is not available (status: ${vehicle.status})` 
       });
@@ -152,6 +160,7 @@ router.post('/', auth, [
     // Check for conflicting reservations
     const conflict = await Reservation.checkConflict(vehicleId, start, end);
     if (conflict) {
+      console.error('[RESERVATION][VALIDATION] Conflit de réservation:', { vehicleId, start, end, conflict: conflict.reservationNumber });
       return res.status(400).json({ 
         message: 'Vehicle is already reserved for this period',
         conflictingReservation: conflict.reservationNumber
@@ -164,18 +173,25 @@ router.post('/', auth, [
     const dailyRate = vehicle.dailyPrice;
     const baseAmount = dailyRate * totalDays;
 
+    // Ne pas passer reservationNumber, il sera généré par le pre-save
+    // Ajout de la gestion de la caution (deposit)
+    let deposit = { amount: 0, paid: false };
+    if (req.body.deposit && typeof req.body.deposit.amount !== 'undefined') {
+      deposit.amount = Number(req.body.deposit.amount) || 0;
+    }
     const reservation = new Reservation({
       client: clientId,
       vehicle: vehicleId,
       startDate: start,
       endDate: end,
-      dailyRate,
-      totalDays,
-      baseAmount,
-      totalAmount: baseAmount, // Will be recalculated by pre-save middleware
+      dailyRate, // tarif journalier du véhicule
+      totalDays, // nombre de jours
+      baseAmount, // montant de base
+      totalAmount: baseAmount, // montant total initial (sera recalculé par le pre-save)
       pickupLocation,
       returnLocation,
-      notes
+      notes,
+      deposit
     });
 
     await reservation.save();
@@ -193,7 +209,7 @@ router.post('/', auth, [
       reservation
     });
   } catch (error) {
-    console.error('Create reservation error:', error);
+    console.error('[RESERVATION][CATCH] Erreur lors de la création de réservation:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });
@@ -274,13 +290,23 @@ router.put('/:id', auth, [
           vehicle.mileage = req.body.mileageStart;
         }
       } else if (req.body.status === 'completed' && reservation.status === 'active') {
-        // Completing the rental
+        // Completing the rental (early or on time)
         reservation.actualEndDate = new Date();
         if (req.body.mileageEnd) {
           vehicle.mileage = req.body.mileageEnd;
         }
+        // Recalcul du nombre de jours loués et du montant total si retour anticipé
+        const start = reservation.actualStartDate || reservation.startDate;
+        const end = reservation.actualEndDate;
+        const diffTime = Math.abs(end - start);
+        const totalDays = Math.max(1, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
+        reservation.totalDays = totalDays;
+        // Utilise le dailyRate du véhicule ou de la réservation
+        const dailyRate = reservation.dailyRate || reservation.vehicle?.dailyPrice || vehicle.dailyPrice || 0;
+        reservation.baseAmount = dailyRate * totalDays;
+        reservation.totalAmount = reservation.baseAmount + (reservation.additionalFees ? reservation.additionalFees.reduce((sum, f) => sum + (f.amount || 0), 0) : 0);
+        console.log('[RESERVATION][DEBUG] Fin anticipée: totalDays =', totalDays, 'baseAmount =', reservation.baseAmount, 'totalAmount =', reservation.totalAmount);
         vehicle.status = 'available';
-        
         // Update client statistics
         const client = await Client.findById(reservation.client);
         client.totalRentals += 1;
@@ -296,6 +322,7 @@ router.put('/:id', auth, [
       }
       
       await vehicle.save();
+      console.log('[RESERVATION][DEBUG] Après save: vehicle.status =', vehicle.status, 'id:', vehicle._id);
     }
 
     // Update other fields
@@ -335,10 +362,10 @@ router.delete('/:id', [auth, authorize('admin')], async (req, res) => {
       return res.status(404).json({ message: 'Reservation not found' });
     }
 
-    // Only allow deletion of pending or cancelled reservations
-    if (!['pending', 'cancelled'].includes(reservation.status)) {
+    // Only allow deletion of pending, cancelled, or completed reservations
+    if (!['pending', 'cancelled', 'completed'].includes(reservation.status)) {
       return res.status(400).json({ 
-        message: 'Can only delete pending or cancelled reservations' 
+        message: 'Can only delete pending, cancelled, or completed reservations' 
       });
     }
 

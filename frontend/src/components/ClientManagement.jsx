@@ -1,3 +1,4 @@
+import DocumentUploader from './DocumentUploader';
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -20,22 +21,41 @@ const ClientManagement = () => {
     limit: 10
   });
 
+  // Ajoute ces états pour le formulaire
+  const [showForm, setShowForm] = useState(false);
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    dateOfBirth: '',
+    nationalId: '',
+    licenseNumber: '',
+    licenseExpiryDate: '',
+    status: 'active',
+    blacklistReason: '',
+    notes: ''
+  });
+  // (supprimé, doublon)
+
   const statusColors = {
     active: 'bg-green-100 text-green-800',
     blacklisted: 'bg-red-100 text-red-800',
     suspended: 'bg-yellow-100 text-yellow-800'
   };
 
+  const [editClientId, setEditClientId] = useState(null);
+  const [newlyCreatedClientId, setNewlyCreatedClientId] = useState(null);
+
   const fetchClients = async (page = 1) => {
     try {
-      setLoading(true);
       const params = {
         page,
         limit: pagination.limit,
-        search: searchTerm,
-        status: statusFilter
       };
-      
+      if (searchTerm) params.search = searchTerm;
+      if (statusFilter) params.status = statusFilter;
+
       const response = await clientsAPI.getAll(params);
       setClients(response.data.clients);
       setPagination(response.data.pagination);
@@ -73,6 +93,61 @@ const ClientManagement = () => {
     return age;
   };
 
+  const handleFormChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleFormSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      if (editClientId) {
+        await clientsAPI.update(editClientId, formData);
+      } else {
+        await clientsAPI.create(formData);
+      }
+      setShowForm(false);
+      setFormData({
+        firstName: '',
+        lastName: '',
+        email: '',
+        phone: '',
+        dateOfBirth: '',
+        nationalId: '',
+        licenseNumber: '',
+        licenseExpiryDate: '',
+        status: 'active',
+        blacklistReason: '',
+        notes: ''
+      });
+      setEditClientId(null);
+      fetchClients();
+    } catch (error) {
+      alert(
+        error?.response?.data?.message ||
+        (error?.response?.data?.errors && JSON.stringify(error.response.data.errors, null, 2)) ||
+        (editClientId ? "Erreur lors de la modification du client" : "Erreur lors de l'ajout du client")
+      );
+    }
+  };
+
+  const handleEditClient = (client) => {
+    setFormData({
+      firstName: client.firstName || '',
+      lastName: client.lastName || '',
+      email: client.email || '',
+      phone: client.phone || '',
+      dateOfBirth: client.dateOfBirth ? client.dateOfBirth.slice(0, 10) : '',
+      nationalId: client.nationalId || '',
+      licenseNumber: client.licenseNumber || '',
+      licenseExpiryDate: client.licenseExpiryDate ? client.licenseExpiryDate.slice(0, 10) : '',
+      status: client.status || 'active',
+      blacklistReason: client.blacklistReason || '',
+      notes: client.notes || ''
+    });
+    setEditClientId(client._id);
+    setShowForm(true);
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -90,11 +165,67 @@ const ClientManagement = () => {
             Gérez vos clients et leur historique
           </p>
         </div>
-        <Button className="flex items-center gap-2">
+        <Button className="flex items-center gap-2" onClick={() => setShowForm(true)}>
           <Plus className="h-4 w-4" />
           {t('addClient')}
         </Button>
       </div>
+
+      {/* Formulaire d'ajout/modification */}
+      {showForm && (
+        <Card>
+          <CardContent>
+            <form className="space-y-4" onSubmit={handleFormSubmit}>
+              <Input name="firstName" placeholder="Prénom" value={formData.firstName} onChange={handleFormChange} required />
+              <Input name="lastName" placeholder="Nom" value={formData.lastName} onChange={handleFormChange} required />
+              <Input name="email" type="email" placeholder="Email" value={formData.email} onChange={handleFormChange} required />
+              <Input name="phone" placeholder="Téléphone" value={formData.phone} onChange={handleFormChange} required />
+              <div>
+                <label htmlFor="dateOfBirth" className="block text-sm font-medium text-gray-700 mb-1">Date de naissance</label>
+                <Input id="dateOfBirth" name="dateOfBirth" type="date" placeholder="Date de naissance" value={formData.dateOfBirth} onChange={handleFormChange} required />
+              </div>
+              <Input name="nationalId" placeholder="CIN" value={formData.nationalId} onChange={handleFormChange} required />
+              <Input name="licenseNumber" placeholder="Numéro de permis" value={formData.licenseNumber} onChange={handleFormChange} required />
+              <div>
+                <label htmlFor="licenseExpiryDate" className="block text-sm font-medium text-gray-700 mb-1">Expiration du permis</label>
+                <Input id="licenseExpiryDate" name="licenseExpiryDate" type="date" placeholder="Expiration permis" value={formData.licenseExpiryDate} onChange={handleFormChange} required />
+              </div>
+              <div>
+                <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-1">Statut</label>
+                <select id="status" name="status" value={formData.status} onChange={handleFormChange} className="w-full border rounded px-3 py-2">
+                  <option value="active">Actif</option>
+                  <option value="blacklisted">Black-listé</option>
+                  <option value="suspended">Suspendu</option>
+                </select>
+              </div>
+              {formData.status === 'blacklisted' && (
+                <Input name="blacklistReason" placeholder="Raison du blacklist" value={formData.blacklistReason} onChange={handleFormChange} />
+              )}
+              <div>
+                <label htmlFor="notes" className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+                <Input id="notes" name="notes" placeholder="Notes" value={formData.notes} onChange={handleFormChange} />
+              </div>
+
+
+              {/* Section Documents (création ou édition) */}
+              {(editClientId || newlyCreatedClientId) && (
+                <div className="space-y-2 border-t pt-4 mt-4">
+                  <div className="font-semibold mb-2">Documents du client</div>
+                  <DocumentUploader clientId={editClientId || newlyCreatedClientId} type="nationalId" label="CIN" />
+                  <DocumentUploader clientId={editClientId || newlyCreatedClientId} type="license" label="Permis de conduire" />
+                </div>
+              )}
+
+              <div className="flex gap-2 pt-2">
+                <Button type="submit">{editClientId ? 'Modifier' : 'Ajouter'}</Button>
+                <Button type="button" variant="outline" onClick={() => { setShowForm(false); setEditClientId(null); setNewlyCreatedClientId(null); setFormData({ firstName: '', lastName: '', email: '', phone: '', dateOfBirth: '', nationalId: '', licenseNumber: '', licenseExpiryDate: '', status: 'active', blacklistReason: '', notes: '' }); }}>
+                  Annuler
+                </Button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Filters */}
       <Card>
@@ -183,11 +314,24 @@ const ClientManagement = () => {
               )}
               
               <div className="flex gap-2 pt-2">
-                <Button variant="outline" size="sm" className="flex-1">
+                <Button variant="outline" size="sm" className="flex-1" onClick={() => handleEditClient(client)}>
                   <Edit className="h-4 w-4 mr-1" />
                   {t('edit')}
                 </Button>
-                <Button variant="outline" size="sm" className="text-red-600 hover:text-red-700">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="text-red-600 hover:text-red-700"
+                  onClick={async () => {
+                    if (!window.confirm('Confirmer la suppression du client ?')) return;
+                    try {
+                      await clientsAPI.delete(client._id);
+                      fetchClients();
+                    } catch (err) {
+                      alert('Erreur lors de la suppression du client');
+                    }
+                  }}
+                >
                   <Trash2 className="h-4 w-4" />
                 </Button>
               </div>

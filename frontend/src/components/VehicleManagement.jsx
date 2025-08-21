@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Plus, Search, Edit, Trash2, Car } from 'lucide-react';
 import { vehiclesAPI } from '../services/api';
 
-const VehicleManagement = () => {
+const VehicleManagement = ({ vehicleRefreshFlag }) => {
   const { t } = useTranslation();
   const [vehicles, setVehicles] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -19,6 +19,20 @@ const VehicleManagement = () => {
     total: 0,
     limit: 10
   });
+  const [showForm, setShowForm] = useState(false);
+  const [formData, setFormData] = useState({
+    brand: '',
+    model: '',
+    year: '',
+    licensePlate: '',
+    fuelType: '',
+    dailyPrice: '',
+    mileage: '',
+    seats: '',
+    image: null
+  });
+  const [editVehicleId, setEditVehicleId] = useState(null);
+  const fileInputRef = useRef();
 
   const statusColors = {
     available: 'bg-green-100 text-green-800',
@@ -33,10 +47,11 @@ const VehicleManagement = () => {
       const params = {
         page,
         limit: pagination.limit,
-        search: searchTerm,
-        status: statusFilter
+        search: searchTerm
       };
-      
+      if (statusFilter) {
+        params.status = statusFilter;
+      }
       const response = await vehiclesAPI.getAll(params);
       setVehicles(response.data.vehicles);
       setPagination(response.data.pagination);
@@ -49,7 +64,8 @@ const VehicleManagement = () => {
 
   useEffect(() => {
     fetchVehicles();
-  }, [searchTerm, statusFilter]);
+    // eslint-disable-next-line
+  }, [searchTerm, statusFilter, vehicleRefreshFlag]);
 
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
@@ -61,6 +77,81 @@ const VehicleManagement = () => {
 
   const handlePageChange = (page) => {
     fetchVehicles(page);
+  };
+
+  const handleAddClick = () => setShowForm(true);
+
+  const handleFormChange = (e) => {
+    const { name, value, files } = e.target;
+    if (name === 'image') {
+      setFormData({ ...formData, image: files[0] });
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
+  };
+
+  const handleFormSubmit = async (e) => {
+    e.preventDefault();
+    const data = new FormData();
+    Object.entries(formData).forEach(([key, value]) => {
+      if (value && key !== 'image') data.append(key, value);
+    });
+    if (formData.image) data.append('image', formData.image);
+    try {
+      if (editVehicleId) {
+        await vehiclesAPI.update(editVehicleId, data);
+      } else {
+        await vehiclesAPI.create(data);
+      }
+      setShowForm(false);
+      setFormData({
+        brand: '',
+        model: '',
+        year: '',
+        licensePlate: '',
+        fuelType: '',
+        dailyPrice: '',
+        mileage: '',
+        seats: '',
+        image: null
+      });
+      setEditVehicleId(null);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+      fetchVehicles();
+    } catch (error) {
+      alert(
+        error?.response?.data?.message ||
+        (error?.response?.data?.errors && JSON.stringify(error.response.data.errors, null, 2))
+      );
+    }
+  };
+
+  const handleEditVehicle = (vehicle) => {
+    setFormData({
+      brand: vehicle.brand || '',
+      model: vehicle.model || '',
+      year: vehicle.year || '',
+      licensePlate: vehicle.licensePlate || '',
+      fuelType: vehicle.fuelType || '',
+      dailyPrice: vehicle.dailyPrice || '',
+      mileage: vehicle.mileage || '',
+      seats: vehicle.seats || '',
+      image: null // image editing is optional, user can re-upload
+    });
+    setEditVehicleId(vehicle._id);
+    setShowForm(true);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm('Voulez-vous vraiment supprimer ce véhicule ?')) return;
+    try {
+      await vehiclesAPI.delete(id);
+      // Recharge la liste après suppression
+      fetchVehicles();
+    } catch (error) {
+      alert("Erreur lors de la suppression du véhicule");
+    }
   };
 
   if (loading) {
@@ -80,11 +171,38 @@ const VehicleManagement = () => {
             Gérez votre flotte de véhicules
           </p>
         </div>
-        <Button className="flex items-center gap-2">
+        <Button className="flex items-center gap-2" onClick={handleAddClick}>
           <Plus className="h-4 w-4" />
           {t('addVehicle')}
         </Button>
       </div>
+
+      {/* Formulaire d'ajout/modification */}
+      {showForm && (
+        <Card>
+          <CardContent>
+            <form className="space-y-4" onSubmit={handleFormSubmit} encType="multipart/form-data">
+              <div className="grid grid-cols-2 gap-4">
+                <Input name="brand" placeholder="Marque" value={formData.brand} onChange={handleFormChange} required />
+                <Input name="model" placeholder="Modèle" value={formData.model} onChange={handleFormChange} required />
+                <Input name="year" type="number" placeholder="Année" value={formData.year} onChange={handleFormChange} required />
+                <Input name="licensePlate" placeholder="Plaque" value={formData.licensePlate} onChange={handleFormChange} required />
+                <Input name="fuelType" placeholder="Carburant" value={formData.fuelType} onChange={handleFormChange} required />
+                <Input name="dailyPrice" type="number" placeholder="Prix/jour" value={formData.dailyPrice} onChange={handleFormChange} required />
+                <Input name="mileage" type="number" placeholder="Kilométrage" value={formData.mileage} onChange={handleFormChange} required />
+                <Input name="seats" type="number" placeholder="Places" value={formData.seats} onChange={handleFormChange} required />
+                <Input name="image" type="file" accept="image/*" onChange={handleFormChange} ref={fileInputRef} />
+              </div>
+              <div className="flex gap-2 pt-2">
+                <Button type="submit">{editVehicleId ? 'Modifier' : t('addVehicle')}</Button>
+                <Button type="button" variant="outline" onClick={() => { setShowForm(false); setEditVehicleId(null); setFormData({ brand: '', model: '', year: '', licensePlate: '', fuelType: '', dailyPrice: '', mileage: '', seats: '', image: null }); if (fileInputRef.current) fileInputRef.current.value = ''; }}>
+                  Annuler
+                </Button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Filters */}
       <Card>
@@ -121,6 +239,13 @@ const VehicleManagement = () => {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {vehicles.map((vehicle) => (
           <Card key={vehicle._id} className="hover:shadow-md transition-shadow">
+            {vehicle.image && (
+              <img
+                src={`http://localhost:5001/${vehicle.image.replace(/\\/g, '/')}`}
+                alt={`${vehicle.brand} ${vehicle.model}`}
+                className="w-full h-40 object-cover rounded mb-2"
+              />
+            )}
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -162,14 +287,42 @@ const VehicleManagement = () => {
                 </div>
               </div>
               
-              <div className="flex gap-2 pt-2">
-                <Button variant="outline" size="sm" className="flex-1">
-                  <Edit className="h-4 w-4 mr-1" />
-                  {t('edit')}
-                </Button>
-                <Button variant="outline" size="sm" className="text-red-600 hover:text-red-700">
-                  <Trash2 className="h-4 w-4" />
-                </Button>
+              <div className="flex flex-col gap-2 pt-2">
+                <div className="flex gap-2">
+                  <Button variant="outline" size="sm" className="flex-1" onClick={() => handleEditVehicle(vehicle)}>
+                    <Edit className="h-4 w-4 mr-1" />
+                    {t('edit')}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="text-red-600 hover:text-red-700"
+                    onClick={() => handleDelete(vehicle._id)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+                {/* Changement de statut */}
+                <div className="flex gap-2 items-center">
+                  <span className="text-xs text-muted-foreground">Statut :</span>
+                  <select
+                    value={vehicle.status}
+                    onChange={async (e) => {
+                      try {
+                        await vehiclesAPI.update(vehicle._id, { status: e.target.value });
+                        fetchVehicles();
+                      } catch (err) {
+                        alert('Erreur lors du changement de statut');
+                      }
+                    }}
+                    className="border rounded px-2 py-1 text-xs"
+                  >
+                    <option value="available">Disponible</option>
+                    <option value="rented">Loué</option>
+                    <option value="maintenance">En maintenance</option>
+                    <option value="out_of_service">Hors service</option>
+                  </select>
+                </div>
               </div>
             </CardContent>
           </Card>

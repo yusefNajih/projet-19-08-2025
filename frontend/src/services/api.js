@@ -83,6 +83,7 @@ export const dashboardAPI = {
   getStats: () => api.get('/dashboard/stats'),
   getRevenue: (params) => api.get('/dashboard/revenue', { params }),
   getAlerts: () => api.get('/dashboard/alerts'),
+  resetRevenue: () => api.post('/dashboard/reset-revenue'),
 };
 
 export default api;

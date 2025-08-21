@@ -79,6 +79,12 @@ const resources = {
       monthlyRevenue: "Revenus Mensuels",
       vehicleStatus: "Statut des Véhicules",
       topClients: "Meilleurs Clients",
+
+      // Revenue Reset (DEV)
+      resetRevenueBtn: "Réinitialiser les revenus (DEV)",
+      resettingRevenue: "Réinitialisation...",
+      revenueResetSuccess: "Les revenus ont été réinitialisés avec succès !",
+      revenueResetError: "Erreur lors de la réinitialisation des revenus.",
       
       // Company
       companyName: "AutoRent Cherkaoui",
@@ -161,6 +167,12 @@ const resources = {
       monthlyRevenue: "الإيرادات الشهرية",
       vehicleStatus: "حالة المركبات",
       topClients: "أفضل العملاء",
+
+      // Revenue Reset (DEV)
+      resetRevenueBtn: "إعادة تعيين الإيرادات (للتطوير)",
+      resettingRevenue: "جاري إعادة التعيين...",
+      revenueResetSuccess: "تمت إعادة تعيين الإيرادات بنجاح!",
+      revenueResetError: "حدث خطأ أثناء إعادة تعيين الإيرادات.",
       
       // Company
       companyName: "أوتورنت الشرقاوي",

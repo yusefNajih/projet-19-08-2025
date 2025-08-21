@@ -1,0 +1,5 @@
+/* Par exemple, pour le body ou la classe du contrat */
+body, .pdf-contract {
+  background: #fff !important;
+  color: #222 !important;
+}

@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 
 // import html2pdf from "html2pdf.js";
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
+
 const ContractGenerator = () => {
   const [formData, setFormData] = useState({
     // Données du loueur
@@ -92,35 +91,51 @@ const ContractGenerator = () => {
 
 
 
+
 const handleDownloadPDF = async () => {
   const contract = document.getElementById("contract-content");
   if (!contract) {
     console.error('error dans contract content ');
-  };
-
-  // Appliquer couleurs simples
+    return;
+  }
   contract.classList.add("force-simple-colors");
-
   try {
-    await new Promise(res => setTimeout(res, 100)); // laisser le temps au style de s'appliquer
-
-    const canvas = await html2canvas(contract, {
-      scale: 2,
-      useCORS: true,
-    });
-
-    const imgData = canvas.toDataURL("image/png");
-    const pdf = new jsPDF("p", "mm", "a4");
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-
-    pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-    pdf.save("Contrat.pdf");
-
+    await new Promise(res => setTimeout(res, 100));
+    // Charger le script html2pdf si non déjà présent
+    function loadHtml2PdfScript() {
+      return new Promise((resolve, reject) => {
+        if (window.html2pdf) return resolve(window.html2pdf);
+        // Correction du chemin pour Vite/React : placer html2pdf.bundle.min.js dans le dossier public et charger depuis /lib/
+        let script = document.createElement('script');
+        script.src = '/lib/html2pdf.bundle.min.js';
+        script.onload = () => resolve(window.html2pdf);
+        script.onerror = reject;
+        document.body.appendChild(script);
+      });
+    }
+    const html2pdf = window.html2pdf || await loadHtml2PdfScript();
+    if (!html2pdf) {
+      throw new Error('html2pdf.js non chargé');
+    }
+    html2pdf()
+      .set({
+        margin:       0,
+        filename:     'Contrat.pdf',
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
+      })
+      .from(contract)
+      .save()
+      .catch(err => {
+        console.error("Erreur génération PDF :", err);
+      })
+      .finally(() => {
+        contract.classList.remove("force-simple-colors");
+      });
   } catch (err) {
     console.error("Erreur génération PDF :", err);
-  } finally {
-    // Restaurer les styles normaux
     contract.classList.remove("force-simple-colors");
   }
 };

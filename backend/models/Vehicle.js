@@ -60,6 +60,9 @@ const vehicleSchema = new mongoose.Schema({
     max: 50,
     default: 5
   },
+  image: { // <-- Ajoute ce champ
+    type: String
+  },
   images: [{
     filename: String,
     originalName: String,

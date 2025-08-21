@@ -1,11 +1,32 @@
+
 const express = require('express');
 const { query, validationResult } = require('express-validator');
 const Vehicle = require('../models/Vehicle');
 const Client = require('../models/Client');
 const Reservation = require('../models/Reservation');
-const { auth } = require('../middleware/auth');
+const { auth, authorize } = require('../middleware/auth');
 
 const router = express.Router();
+
+// @route   POST /api/dashboard/reset-revenue
+// @desc    Reset total revenue (set all completed reservations' totalAmount to 0)
+// @access  Private, Admin only, DEV only
+router.post('/reset-revenue', auth, authorize('admin'), async (req, res) => {
+  // Only allow in development
+  if (process.env.NODE_ENV !== 'development') {
+    return res.status(403).json({ message: 'Not allowed in production' });
+  }
+  try {
+    const result = await Reservation.updateMany(
+      { status: 'completed' },
+      { $set: { totalAmount: 0 } }
+    );
+    res.json({ message: 'Total revenue reset', modifiedCount: result.modifiedCount });
+  } catch (error) {
+    console.error('Reset revenue error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
 
 // @route   GET /api/dashboard/stats
 // @desc    Get dashboard statistics
@@ -97,6 +118,20 @@ router.get('/stats', auth, async (req, res) => {
       ]
     }).countDocuments();
 
+    // Total des cautions en cours (réservations actives ou confirmed)
+    const depositStats = await Reservation.aggregate([
+      {
+        $match: { status: { $in: ['active', 'confirmed'] }, 'deposit.amount': { $gt: 0 } }
+      },
+      {
+        $group: {
+          _id: null,
+          totalDeposit: { $sum: '$deposit.amount' },
+          count: { $sum: 1 }
+        }
+      }
+    ]);
+
     res.json({
       overview: {
         totalVehicles,
@@ -104,7 +139,9 @@ router.get('/stats', auth, async (req, res) => {
         activeRentals,
         totalRevenue: revenueStats[0]?.totalRevenue || 0,
         overdueCount,
-        expiringDocuments
+        expiringDocuments,
+        totalDeposit: depositStats[0]?.totalDeposit || 0,
+        depositCount: depositStats[0]?.count || 0
       },
       vehicleStatus: vehicleStatusStats.reduce((acc, item) => {
         acc[item._id] = item.count;

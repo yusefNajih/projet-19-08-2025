@@ -14,7 +14,9 @@ import {
   X,
   LogOut
 } from 'lucide-react';
+
 import LanguageSwitcher from './LanguageSwitcher';
+import DarkModeToggle from './DarkModeToggle';
 
 const Layout = ({ children, currentPage, onPageChange, user, onLogout }) => {
   const { t } = useTranslation();
@@ -25,6 +27,10 @@ const Layout = ({ children, currentPage, onPageChange, user, onLogout }) => {
     { id: 'vehicles', icon: Car, label: t('vehicles') },
     { id: 'clients', icon: Users, label: t('clients') },
     { id: 'reservations', icon: Calendar, label: t('reservations') },
+    // Affiche le bouton Suivi administratif seulement pour l'admin
+    ...(user && user.role === 'admin' ? [
+      { id: 'vehicle-admin', icon: FileText, label: t('Suivi administratif') }
+    ] : []),
     { id: 'billing', icon: Receipt, label: t('billing') },
     { id: 'contracts', icon: FileText, label: t('contracts') },
     { id: 'maintenance', icon: Wrench, label: t('maintenance') },
@@ -35,7 +41,7 @@ const Layout = ({ children, currentPage, onPageChange, user, onLogout }) => {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="bg-white border-b border-border px-4 py-3 flex items-center justify-between">
+      <header className="border-b border-border px-4 py-3 flex items-center justify-between bg-background text-foreground dark:bg-[var(--sidebar)] dark:text-[var(--sidebar-foreground)]">
         <div className="flex items-center gap-4">
           <Button
             variant="ghost"
@@ -45,7 +51,7 @@ const Layout = ({ children, currentPage, onPageChange, user, onLogout }) => {
           >
             {sidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </Button>
-          <h1 className="text-xl font-bold text-primary">
+          <h1 className="text-xl font-bold text-primary dark:text-[var(--sidebar-foreground)]">
             {t('companyName')}
           </h1>
         </div>
@@ -53,7 +59,7 @@ const Layout = ({ children, currentPage, onPageChange, user, onLogout }) => {
           <LanguageSwitcher />
           {user && (
             <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-600">
+              <span className="text-sm text-gray-600 dark:text-[var(--sidebar-foreground)]">
                 {user.firstName} {user.lastName}
               </span>
               <Button
@@ -73,9 +79,10 @@ const Layout = ({ children, currentPage, onPageChange, user, onLogout }) => {
       <div className="flex">
         {/* Sidebar */}
         <aside className={`
-          fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white border-r border-border transform transition-transform duration-200 ease-in-out
+          fixed lg:static inset-y-0 left-0 z-50 w-64 border-r border-border transform transition-transform duration-200 ease-in-out
           ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
           mt-[57px] lg:mt-0
+          bg-[var(--sidebar)] text-[var(--sidebar-foreground)] dark:bg-[var(--sidebar)] dark:text-[var(--sidebar-foreground)]
         `}>
           <nav className="p-4 space-y-2">
             {menuItems.map((item) => {
@@ -108,6 +115,13 @@ const Layout = ({ children, currentPage, onPageChange, user, onLogout }) => {
 
         {/* Main Content */}
         <main className="flex-1 p-6">
+          {/* Afficher le toggle dark mode si on est sur la page settings */}
+          {currentPage === 'settings' && (
+            <div className="max-w-md mx-auto bg-card dark:bg-zinc-800 rounded-lg shadow p-6 mt-8 text-foreground dark:text-white">
+              <h2 className="text-lg font-semibold mb-4">{t('settings', 'Paramètres')}</h2>
+              <DarkModeToggle />
+            </div>
+          )}
           {children}
         </main>
       </div>

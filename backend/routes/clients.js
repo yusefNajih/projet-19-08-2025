@@ -1,9 +1,92 @@
+
+
+
 const express = require('express');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+const { auth, authorize } = require('../middleware/auth');
 const { body, validationResult, query } = require('express-validator');
 const Client = require('../models/Client');
-const { auth, authorize } = require('../middleware/auth');
 
 const router = express.Router();
+
+
+// Multer config for client documents
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    const dir = path.join(__dirname, '../uploads/clients', req.params.id);
+    fs.mkdirSync(dir, { recursive: true });
+    cb(null, dir);
+  },
+  filename: function (req, file, cb) {
+    const ext = path.extname(file.originalname);
+    const type = req.body.type || file.fieldname;
+    cb(null, `${type}_${Date.now()}${ext}`);
+  }
+});
+const upload = multer({ storage });
+
+// @route   POST /api/clients/:id/documents
+// @desc    Upload a document (CIN, permis, etc.) for a client
+// @access  Private
+router.post('/:id/documents', auth, upload.single('document'), async (req, res) => {
+  try {
+    const client = await Client.findById(req.params.id);
+    if (!client) return res.status(404).json({ message: 'Client not found' });
+    const type = req.body.type; // 'license' ou 'nationalId'
+    if (!['license', 'nationalId'].includes(type)) return res.status(400).json({ message: 'Invalid document type' });
+    client.documents[type] = {
+      filename: req.file.filename,
+      originalName: req.file.originalname,
+      path: req.file.path,
+      uploadDate: new Date()
+    };
+    await client.save();
+    res.json({ message: 'Document uploaded', document: client.documents[type] });
+  } catch (err) {
+    console.error('Upload client document error:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// @route   GET /api/clients/:id/documents/:type
+// @desc    Download/view a client document
+// @access  Private
+router.get('/:id/documents/:type', auth, async (req, res) => {
+  try {
+    const client = await Client.findById(req.params.id);
+    if (!client) return res.status(404).json({ message: 'Client not found' });
+    const type = req.params.type;
+    if (!client.documents[type] || !client.documents[type].path) return res.status(404).json({ message: 'Document not found' });
+    res.sendFile(path.resolve(client.documents[type].path));
+  } catch (err) {
+    console.error('Get client document error:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// @route   DELETE /api/clients/:id/documents/:type
+// @desc    Delete a client document
+// @access  Private
+router.delete('/:id/documents/:type', auth, async (req, res) => {
+  try {
+    const client = await Client.findById(req.params.id);
+    if (!client) return res.status(404).json({ message: 'Client not found' });
+    const type = req.params.type;
+    if (!client.documents[type] || !client.documents[type].path) return res.status(404).json({ message: 'Document not found' });
+    // Remove file from disk
+    fs.unlinkSync(client.documents[type].path);
+    client.documents[type] = undefined;
+    await client.save();
+    res.json({ message: 'Document deleted' });
+  } catch (err) {
+    console.error('Delete client document error:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+
 
 // @route   GET /api/clients
 // @desc    Get all clients with filtering and pagination
