@@ -561,3 +561,28 @@
   }
 }
 
+.form-row-double {
+  
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.form-group.half-width {
+  border-radius: 9px;
+  width:250px;
+  flex: 1;
+  min-width: 0;
+}
+.form-group.half-width input {
+  width: 100%;       /* take full width */
+  height: 100%;      /* optional: take full height */
+  box-sizing: border-box; /* include padding/border in width/height */
+}
+
+/* @media (max-width: 768px) {
+  .form-row-double {
+    flex-direction: column;
+    gap: 20px;
+  }
+} */

@@ -87,8 +87,8 @@ const resources = {
       revenueResetError: "Erreur lors de la réinitialisation des revenus.",
       
       // Company
-      companyName: "AutoRent Cherkaoui",
-      welcomeMessage: "Bienvenue dans le système de gestion AutoRent Cherkaoui"
+      companyName: "Cherkaoui AutoRent",
+      welcomeMessage: "système de gestion Cherkaoui AutoRent"
     }
   },
   ar: {
@@ -175,8 +175,8 @@ const resources = {
       revenueResetError: "حدث خطأ أثناء إعادة تعيين الإيرادات.",
       
       // Company
-      companyName: "أوتورنت الشرقاوي",
-      welcomeMessage: "مرحباً بكم في نظام إدارة أوتورنت الشرقاوي"
+      companyName: "الشرقاوي أوتورنت ",
+      welcomeMessage: "مرحباً بكم في نظام إدارةالشرقاوي أوتورنت "
     }
   }
 };

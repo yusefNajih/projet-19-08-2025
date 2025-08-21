@@ -140,269 +140,239 @@ const handleDownloadPDF = async () => {
   }
 };
 
-
+ 
 
 
   return (
     <div className="contract-generator">
-      {/* Section de prévisualisation du contrat */}
+    
        <div className="form-section">
-        <h2>Informations du contrat</h2>
-        
-        <div className="form-actions">
-          <button onClick={handlePrint} className="btn btn-primary">
-            Imprimer
-          </button>
-          <button type="button" onClick={handleDownloadPDF} className="btn btn-secondary">
-             Télécharger PDF
-          </button>
+  <h2>Informations du contrat</h2>
+  
+  <div className="form-actions">
+    <button onClick={handlePrint} className="btn btn-primary">
+      Imprimer
+    </button>
+    <button type="button" onClick={handleDownloadPDF} className="btn btn-secondary">
+      Télécharger PDF
+    </button>
+  </div>
+
+  <form className="contract-form">
+    {/* Informations Loueur et Locataire sur la même ligne */}
+    <div className="form-row-double">
+      {/* <div className="form-group half-width">
+        <h3>Informations du loueur</h3>
+        <div className="form-row">
+          <input
+            type="text"
+            name="loueurRC"
+            placeholder="Registre de Commerce"
+            value={formData.loueurRC}
+            onChange={handleInputChange}
+          />
         </div>
+        <div className="form-row">
+          <input
+            type="text"
+            name="loueurRepresentant"
+            placeholder="Représenté par"
+            value={formData.loueurRepresentant}
+            onChange={handleInputChange}
+          />
+          <input
+            type="text"
+            name="loueurTel"
+            placeholder="Téléphone du loueur"
+            value={formData.loueurTel}
+            onChange={handleInputChange}
+          />
+        </div>
+      </div> */}
 
-        <form className="contract-form">
-          <div className="form-group">
-            <h3>Informations du loueur</h3>
-            <div className="form-row">
-             
-              {/* <input
-                type="text"
-                name="loueurVille"
-                placeholder="Ville du loueur"
-                value={formData.loueurVille}
-                onChange={handleInputChange}
-              /> */}
-            </div>
-            <div className="form-row">
-              <input
-                type="text"
-                name="loueurRC"
-                placeholder="Registre de Commerce"
-                value={formData.loueurRC}
-                onChange={handleInputChange}
-              />
-             
-            </div>
-            
-            <div className="form-row">
-              <input
-                type="text"
-                name="loueurRepresentant"
-                placeholder="Représenté par"
-                value={formData.loueurRepresentant}
-                onChange={handleInputChange}
-              />
-              <input
-                type="text"
-                name="loueurTel"
-                placeholder="Téléphone du loueur"
-                value={formData.loueurTel}
-                onChange={handleInputChange}
-              />
-            </div>
-          </div>
-
-          <div className="form-group">
-            <h3>Informations du locataire</h3>
-            <div className="form-row">
-              <input
-                type="text"
-                name="locataireNomPrenom"
-                placeholder="Nom et prénom"
-                value={formData.locataireNomPrenom}
-                onChange={handleInputChange}
-              />
-              <input
-                type="text"
-                name="locataireCIN"
-                placeholder="N° CIN/Passeport"
-                value={formData.locataireCIN}
-                onChange={handleInputChange}
-              />
-            </div>
-            
-            
-            <div className="form-row">
-              <input
-                type="tel"
-                name="locataireTel"
-                placeholder="Téléphone du locataire"
-                value={formData.locataireTel}
-                onChange={handleInputChange}
-              />
-              <input
-                type="text"
-                name="locatairePermis"
-                placeholder="N° de permis de conduire"
-                value={formData.locatairePermis}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div className="form-row">
-              <input
-                type="date"
-                name="locatairePermisDate"
-                placeholder="Date d'obtention du permis"
-                value={formData.locatairePermisDate}
-                onChange={handleInputChange}
-              />
-            </div>
-          </div>
-
-          <div className="form-group">
-            <h3>Informations du véhicule</h3>
-            <div className="form-row">
-              <input
-                type="text"
-                name="vehiculeMarque"
-                placeholder="Marque et modèle"
-                value={formData.vehiculeMarque}
-                onChange={handleInputChange}
-              />
-              <input
-                type="text"
-                name="vehiculeImmat"
-                placeholder="N° d'immatriculation"
-                value={formData.vehiculeImmat}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div className="form-row">
-             
-              <input
-                type="number"
-                name="vehiculeKm"
-                placeholder="Kilométrage au départ"
-                value={formData.vehiculeKm}
-                onChange={handleInputChange}
-              />
-            </div>
-            {/* <div className="form-row">
-              <input
-                type="text"
-                name="vehiculeCarburant"
-                placeholder="Niveau de carburant"
-                value={formData.vehiculeCarburant}
-                onChange={handleInputChange}
-              />
-              <input
-                type="text"
-                name="vehiculeEtat"
-                placeholder="État général"
-                value={formData.vehiculeEtat}
-                onChange={handleInputChange}
-              />
-            </div> */}
-          </div>
-
-   
-
-          <div className="form-group">
-            <h3>Conditions tarifaires</h3>
-            <div className="form-row">
-             <input
-    type="number"
-    name="depotGarantie"
-    placeholder="Dépôt de garantie (DH)"
-    value={formData.depotGarantie}
-    onChange={handleInputChange}
-  />
-            </div>
-           
-           <div className="form-row">
-           
-  <input
-    type="number"
-    name="prixParJour"
-    placeholder="Prix par jour (DH)"
-    value={formData.prixParJour}
-    onChange={handleInputChange}
-  />
-  <input
-    type="number"
-    name="nombreJours"
-    placeholder="Nombre de jours"
-    value={formData.nombreJours}
-    onChange={handleInputChange}
-  />
-    <input
-    type="number"
-    name="montantTotal"
-    placeholder="Montant total TTC (DH)"
-    value={(parseFloat(formData.prixParJour) || 0) * (parseInt(formData.nombreJours) || 0)}
-    onChange={handleInputChange}
-    readOnly
-    style={{ backgroundColor: '#f9f9f9' }}
-  />
-</div>
-
-{/* Votre code existant modifié */}
-
-
-</div>
-
-          <div className="form-group">
-            <h3>Conducteur supplémentaire</h3>
-            <div className="form-row">
-              <input
-                type="text"
-                name="conducteurSupp"
-                placeholder="Nom Complet  du conducteur supplémentaire"
-                value={formData.conducteurSupp}
-                onChange={handleInputChange}
-              />
-            
-            </div>
-            <div className="form-row">
-               <input
-                type="text"
-                name="conducteurSuppPermis"
-                placeholder="N° permis conducteur supplémentaire"
-                value={formData.conducteurSuppPermis}
-                onChange={handleInputChange}
-              />
-            </div>
-          </div>
-
-
-          <div className="form-group">
-            <h3>Signature et contact</h3>
-            <div className="form-row">
-              <input
-                type="text"
-                name="lieuSignature"
-                placeholder="Lieu de signature"
-                value={formData.lieuSignature}
-                onChange={handleInputChange}
-              />
-              <input
-                type="date"
-                name="dateSignature"
-                placeholder="Date de signature"
-                value={formData.dateSignature}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div className="form-row">
-              
-            </div>
-            <div className="form-row">
-              <input
-                type="tel"
-                name="contactTel"
-                placeholder="Téléphone de contact"
-                value={formData.contactTel}
-                onChange={handleInputChange}
-              />
-              <input
-                type="email"
-                name="contactEmail"
-                placeholder="Email de contact"
-                value="Cherkaoui.autorent@gmail.com"
-                onChange={handleInputChange}
-              />
-            </div>
-          </div>
-        </form>
+      <div className="form-group half-width">
+        <h3>Informations du locataire</h3>
+        <div className="form-row">
+          <input
+            type="text"
+            name="locataireNomPrenom"
+            placeholder="Nom et prénom"
+            value={formData.locataireNomPrenom}
+            onChange={handleInputChange}
+          />
+          <input
+            type="text"
+            name="locataireCIN"
+            placeholder="N° CIN/Passeport"
+            value={formData.locataireCIN}
+            onChange={handleInputChange}
+          />
+        </div>
+        <div className="form-row">
+          <input
+            type="tel"
+            name="locataireTel"
+            placeholder="Téléphone du locataire"
+            value={formData.locataireTel}
+            onChange={handleInputChange}
+          />
+          <input
+            type="text"
+            name="locatairePermis"
+            placeholder="N° de permis de conduire"
+            value={formData.locatairePermis}
+            onChange={handleInputChange}
+          />
+        </div>
+        <div className="form-row">
+          <input
+            type="date"
+            name="locatairePermisDate"
+            placeholder="Date d'obtention du permis"
+            value={formData.locatairePermisDate}
+            onChange={handleInputChange}
+          />
+        </div>
       </div>
+       <div className="form-group half-width">
+        <h3>Conducteur supplémentaire</h3>
+        <div className="form-row">
+          <input
+            type="text"
+            name="conducteurSupp"
+            placeholder="Nom complet du conducteur supplémentaire"
+            value={formData.conducteurSupp}
+            onChange={handleInputChange}
+          />
+        </div>
+        <div className="form-row">
+          <input
+            type="text"
+            name="conducteurSuppPermis"
+            placeholder="N° permis conducteur supplémentaire"
+            value={formData.conducteurSuppPermis}
+            onChange={handleInputChange}
+          />
+        </div>
+      </div>
+    </div>
+
+    {/* Véhicule et Conditions tarifaires sur la même ligne */}
+    <div className="form-row-double">
+      <div className="form-group half-width">
+        <h3>Informations du véhicule</h3>
+        <div className="form-row">
+          <input
+            type="text"
+            name="vehiculeMarque"
+            placeholder="Marque et modèle"
+            value={formData.vehiculeMarque}
+            onChange={handleInputChange}
+          />
+          <input
+            type="text"
+            name="vehiculeImmat"
+            placeholder="N° d'immatriculation"
+            value={formData.vehiculeImmat}
+            onChange={handleInputChange}
+          />
+        </div>
+        <div className="form-row">
+          <input
+            type="number"
+            name="vehiculeKm"
+            placeholder="Kilométrage au départ"
+            value={formData.vehiculeKm}
+            onChange={handleInputChange}
+          />
+        </div>
+      </div>
+
+      <div className="form-group half-width">
+        <h3>Conditions tarifaires</h3>
+        <div className="form-row">
+          <input
+            type="number"
+            name="depotGarantie"
+            placeholder="Dépôt de garantie (DH)"
+            value={formData.depotGarantie}
+            onChange={handleInputChange}
+          />
+        </div>
+        <div className="form-row">
+          <input
+            type="number"
+            name="prixParJour"
+            placeholder="Prix par jour (DH)"
+            value={formData.prixParJour}
+            onChange={handleInputChange}
+          />
+          <input
+            type="number"
+            name="nombreJours"
+            placeholder="Nombre de jours"
+            value={formData.nombreJours}
+            onChange={handleInputChange}
+          />
+        </div>
+        <div className="form-row">
+          <input
+            type="number"
+            name="montantTotal"
+            placeholder="Montant total TTC (DH)"
+            value={(parseFloat(formData.prixParJour) || 0) * (parseInt(formData.nombreJours) || 0)}
+            onChange={handleInputChange}
+            readOnly
+            style={{ backgroundColor: '#f9f9f9' }}
+          />
+        </div>
+      </div>
+    </div>
+
+    {/* Conducteur supplémentaire et Signature sur la même ligne */}
+    <div className="form-row-double">
+     
+
+      <div className="form-group half-width">
+        <h3>Signature et contact</h3>
+        <div className="form-row">
+          <input
+            type="text"
+            name="lieuSignature"
+            placeholder="Lieu de signature"
+            value={formData.lieuSignature}
+            onChange={handleInputChange}
+          />
+          <input
+            type="date"
+            name="dateSignature"
+            placeholder="Date de signature"
+            value={formData.dateSignature}
+            onChange={handleInputChange}
+          />
+        </div>
+        <div className="form-row">
+          <input
+            type="tel"
+            name="contactTel"
+            placeholder="Téléphone de contact"
+            value={formData.contactTel}
+            onChange={handleInputChange}
+          />
+          <input
+            type="email"
+            name="contactEmail"
+            placeholder="Email de contact"
+            value="Cherkaoui.autorent@gmail.com"
+            onChange={handleInputChange}
+          />
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+      
+    
       <hr className="separtor"/>
       <div className="contract-preview" id="contract-content">
         <div className="contract-header">
