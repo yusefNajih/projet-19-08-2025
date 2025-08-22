@@ -1,38 +1,40 @@
-import { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
-import Layout from './components/Layout';
-import Login from './components/Login';
-import Dashboard from './components/Dashboard';
-import VehicleManagement from './components/VehicleManagement';
-import VehicleAdminTable from './components/VehicleAdminTable';
-import ClientManagement from './components/ClientManagement';
-import ReservationManagement from './components/ReservationManagement';
-import ContractGenerator from './components/ContractGenerator';
-import './i18n';
-import './App.css';
+import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
+import Layout from "./components/Layout";
+import Login from "./components/Login";
+import Dashboard from "./components/Dashboard";
+import VehicleManagement from "./components/VehicleManagement";
+import VehicleAdminTable from "./components/VehicleAdminTable";
+import ClientManagement from "./components/ClientManagement";
+import ReservationManagement from "./components/ReservationManagement";
+import Facture from "./components/Facturation";
+import ContractGenerator from "./components/ContractGenerator";
+import Settings from "./components/Settings";
+import "./i18n";
+import "./App.css";
 
 function App() {
   const { i18n } = useTranslation();
-  const [currentPage, setCurrentPage] = useState('dashboard');
+  const [currentPage, setCurrentPage] = useState("dashboard");
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   // Vehicle refresh flag for cross-component update
   const [vehicleRefreshFlag, setVehicleRefreshFlag] = useState(0);
 
   // Function to trigger vehicle list refresh
-  const triggerVehicleRefresh = () => setVehicleRefreshFlag(f => f + 1);
+  const triggerVehicleRefresh = () => setVehicleRefreshFlag((f) => f + 1);
 
   // Check for existing authentication on app load
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    const userData = localStorage.getItem('user');
-    
+    const token = localStorage.getItem("token");
+    const userData = localStorage.getItem("user");
+
     if (token && userData) {
       try {
         setUser(JSON.parse(userData));
       } catch (error) {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
       }
     }
     setLoading(false);
@@ -40,7 +42,7 @@ function App() {
 
   // Set initial document direction based on language
   useEffect(() => {
-    document.documentElement.dir = i18n.language === 'ar' ? 'rtl' : 'ltr';
+    document.documentElement.dir = i18n.language === "ar" ? "rtl" : "ltr";
     document.documentElement.lang = i18n.language;
   }, [i18n.language]);
 
@@ -49,34 +51,38 @@ function App() {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
     setUser(null);
-    setCurrentPage('dashboard');
+    setCurrentPage("dashboard");
   };
 
   const renderPage = () => {
     switch (currentPage) {
-      case 'dashboard':
+      case "dashboard":
         return <Dashboard />;
-      case 'vehicles':
+      case "vehicles":
         return <VehicleManagement vehicleRefreshFlag={vehicleRefreshFlag} />;
-      case 'vehicle-admin':
+      case "vehicle-admin":
         return <VehicleAdminTable />;
-      case 'clients':
+      case "clients":
         return <ClientManagement />;
-      case 'reservations':
-        return <ReservationManagement triggerVehicleRefresh={triggerVehicleRefresh} />;
-      case 'billing':
-        return <div>Facturation (à implémenter)</div>;
-      case 'contracts':
-        return  <ContractGenerator />;
-      case 'maintenance':
+      case "reservations":
+        return (
+          <ReservationManagement
+            triggerVehicleRefresh={triggerVehicleRefresh}
+          />
+        );
+      case "billing":
+        return <Facture />;
+      case "contracts":
+        return <ContractGenerator />;
+      case "maintenance":
         return <div>Maintenance (à implémenter)</div>;
-      case 'reports':
+      case "reports":
         return <div>Rapports (à implémenter)</div>;
-      case 'settings':
-        return null;
+      case "settings":
+        return <Settings />;
       default:
         return <Dashboard />;
     }
@@ -90,13 +96,18 @@ function App() {
     );
   }
 
+  // Si aucun utilisateur, afficher le composant Login qui gérera l'affichage du formulaire d'inscription admin
   if (!user) {
-    return <Login onLogin={handleLogin} />;
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4">
+        <Login onLogin={handleLogin} />
+      </div>
+    );
   }
 
   return (
-    <Layout 
-      currentPage={currentPage} 
+    <Layout
+      currentPage={currentPage}
       onPageChange={setCurrentPage}
       user={user}
       onLogout={handleLogout}
@@ -107,3 +118,5 @@ function App() {
 }
 
 export default App;
+
+

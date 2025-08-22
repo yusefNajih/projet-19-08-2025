@@ -115,13 +115,6 @@ const Layout = ({ children, currentPage, onPageChange, user, onLogout }) => {
 
         {/* Main Content */}
         <main className="flex-1 p-6">
-          {/* Afficher le toggle dark mode si on est sur la page settings */}
-          {currentPage === 'settings' && (
-            <div className="max-w-md mx-auto bg-card dark:bg-zinc-800 rounded-lg shadow p-6 mt-8 text-foreground dark:text-white">
-              <h2 className="text-lg font-semibold mb-4">{t('settings', 'Paramètres')}</h2>
-              <DarkModeToggle />
-            </div>
-          )}
           {children}
         </main>
       </div>

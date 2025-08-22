@@ -300,13 +300,16 @@
   margin: 15px 0;
 }
 
-.contract-footer {
-  margin-top: 30px;
+/* .contract-footer {
+  margin-top: 0p;
   text-align: center;
   font-style: italic;
   border-top: 1px solid #bdc3c7;
-  padding-top: 20px;
+  padding-top: 3px;
 }
+.contract-footer p {
+  font-size: x-small;
+} */
 
 /* Section du formulaire */
 .form-section {
@@ -632,20 +635,21 @@ justify-content: space-between;
  margin-top: 0;
  }
  .locataire-section{
-   width: 45%;
+  width: 45%;
   border:1px dashed black;
   padding: 8px;
   border-radius: 4px;
  }
   .locataire-section p, .locataire-section-sign p{
    font-size: 8px; 
+   color:black;
   }
-.locataire-section img{
-width: 150px;
+/* .locataire-section img{
+  width: 150px;
   height: auto;
   display: block;
   margin: 0;
-}
+} */
 /* articles */
 /* Conteneur principal */
 .contract-container {
@@ -752,3 +756,21 @@ width: 150px;
   padding: 10px;
   border-radius: 6px;
 }
+/* Facturation */
+
+/* .facturation-container{
+  display: flex;
+ 
+} */
+ /* .facturation-content{
+  display: flex;
+  justify-content: space-between;
+  border:1px solid black;
+ }
+ .facturation-form{
+ border:1px dashed rgb(175, 60, 60);
+ }
+ .facturation-invoice{
+  background-color: #7b7c7e;
+   border:1px dashed rgb(6, 179, 153);
+ } */

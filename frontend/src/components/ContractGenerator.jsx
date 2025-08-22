@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import logo from "../assets/logo.png";
-import cache from "../assets/cache.png"
+// import cache from "../assets/cache.png"
 // import html2pdf from "html2pdf.js";
 // src/data/contractArticles.js
 //les articles de contracts
@@ -325,7 +325,7 @@ const ContractGenerator = () => {
       html2pdf()
         .set({
           margin: 0,
-          filename: "Contrat.pdf",
+          filename:`Contrat_${formData.locataireNomPrenom}.pdf`,
           image: { type: "jpeg", quality: 0.98 },
           html2canvas: { scale: 2, useCORS: true },
           jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
@@ -588,6 +588,7 @@ const ContractGenerator = () => {
       </div>
       <hr className="separtor" />
       <div className="contract-preview" id="contract-content">
+        
         <div className="contract-header">
           <h1>
             <strong>CONTRAT</strong>
@@ -765,27 +766,28 @@ const ContractGenerator = () => {
         {/* signature */}
         <div className="contract-section signature-section" >
 
-          <div className="locataire-section" style={{ width: "45%" }}>
-            <div> 
-              <p><i>Je déclare avoir pris connaissance des conditions générales mentionnées dans
-             le contrat de location de voiture (au verso) que j'accepte sans réserve</i></p>
-         
-              <strong>Lieu :</strong> {formData.lieuPrise || "________________"}<br />
-              <strong>Date :</strong> {formData.dateDebut || "________________"}
-              </div>
-            
-           
-            
-          </div>
-
           <div className="locataire-section" >
-            
+          
+              <p><i>je soussigné <strong><i>{formData.locataireNomPrenom}</i></strong> déclare avoir pris connaissance des conditions 
+générales figurant dans le contrat de location de voiture, que j'accepte sans réserve.</i>
+</p>
+            <p>  <strong>Lieu :</strong> {formData.lieuPrise || "________________"}<br />
+              <strong>Date :</strong> {formData.dateDebut || "________________"}
+        </p>
+          </div>
+          <div className="locataire-section" >
             <div> 
               {/* <img src={cache} alt="cache" /> */}
             </div>
           </div>
-
         </div>
+
+        {/* <div className="contract-footer">
+          <p><em><strong>CHERKAOUI AUTO RENT SARL</strong></em></p>
+          <p>ICE: 003765030000093 - TP: 41201401 - RC: 709/BOUJAAD</p>
+          <p><strong>Adresse: </strong>N° 97 LOT ENNAKHIL BEJAAD | <strong> Email: </strong> Cherkaoui.autorent@gmail.com | <strong>Tél :</strong> +212 74 72 74 79 / +212 6 45 84 86 86 </p>
+        </div> */}
+
         <div className="contract-container">
       <h1 className="contract-title">
         Conditions Générales du Contrat
@@ -825,19 +827,14 @@ const ContractGenerator = () => {
         <p className="signature-line">— Signature du Locataire</p>
       </div> */}
         <div className="locataire-section-sign" >
-            <div> 
               <p><i>je soussigné <strong><i>{formData.locataireNomPrenom}</i></strong> déclare avoir pris connaissance des conditions 
-générales figurant dans le contrat de location de voiture, que j'accepte sans réserve.</i></p>
-         
+générales figurant dans le contrat de location de voiture, que j'accepte sans réserve.</i>
+</p>
               <strong>Lieu :</strong> {formData.lieuPrise || "________________"}<br />
               <strong>Date :</strong> {formData.dateDebut || "________________"}
-              </div>
-            
-           
-            
-          </div>
-
-    </div>
+        </div>
+    
+        </div>
 
       </div>
     

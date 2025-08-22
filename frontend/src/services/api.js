@@ -1,6 +1,7 @@
 import axios from "axios";
 
-const API_BASE_URL = "http://localhost:5001/api";
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:5001/api";
 
 // Create axios instance
 const api = axios.create({
@@ -89,5 +90,9 @@ export const dashboardAPI = {
   getAlerts: () => api.get("/dashboard/alerts"),
   resetRevenue: () => api.post("/dashboard/reset-revenue"),
 };
+
+// Admin API
+export const registerAdmin = (adminData) =>
+  api.post("/admin/register", adminData);
 
 export default api;
