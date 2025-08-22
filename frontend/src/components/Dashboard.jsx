@@ -56,7 +56,7 @@ const Dashboard = () => {
       value: vehicleStatus.outOfService || 0,
     },
   ];
-  const pieColors = ["#4ade80", "#60a5fa", "#f87171"];
+  const pieColors = ["#111c97ff", "#60a5fa", "#f87171"];
 
   // Refetch stats
   const fetchStats = () => {
