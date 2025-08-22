@@ -113,9 +113,9 @@ const vehicleSchema = new mongoose.Schema({
 });
 
 // Index for efficient queries
-vehicleSchema.index({ status: 1 });
-vehicleSchema.index({ brand: 1, model: 1 });
-vehicleSchema.index({ licensePlate: 1 });
+// vehicleSchema.index({ status: 1 });
+// vehicleSchema.index({ brand: 1, model: 1 });
+// vehicleSchema.index({ licensePlate: 1 });
 
 // Virtual for full name
 vehicleSchema.virtual('fullName').get(function() {

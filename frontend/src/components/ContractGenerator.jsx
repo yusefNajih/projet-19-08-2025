@@ -1,87 +1,295 @@
-import React, { useState } from 'react';
-
+import React, { useState } from "react";
+import logo from "../assets/logo.png";
+// import cache from "../assets/cache.png"
 // import html2pdf from "html2pdf.js";
+// src/data/contractArticles.js
+//les articles de contracts
+const contractArticles = [
+  {
+    numero: 1,
+    titre: "IDENTIFICATION DES PARTIES",
+    contenu:
+      "Le présent contrat est conclu entre l’agence de location de voiture, représentée légalement selon les mentions figurant en page de couverture, ci-après dénommée la société Cherkaoui Auto Rent, et le locataire défini en page 1 du contrat.",
+    arabe:
+      "أُبرِم هذا العقد بين وكالة كراء السيارات، الممثلة قانونيًا حسب المعطيات الواردة في صفحة الغلاف، المشار إليها فيما بعد بـ\"الشركة\"، والطرف الثاني المكتري المحدد في الصفحة الأولى من العقد."
+  },
+  {
+    numero: 2,
+    titre: "ÉTAT DU VÉHICULE",
+    contenu:
+      "Le véhicule est livré au locataire en parfait état apparent, propre et fonctionnel. Un état des lieux contradictoire est établi à la remise et au retour du véhicule. Toute anomalie non signalée lors de la remise engage la responsabilité du locataire.",
+    arabe:
+      "تُسلَّم السيارة إلى المكتري وهي في حالة ميكانيكية سليمة، نظيفة، وجاهزة للاستعمال. يتم تحرير محضر معاينة عند التسليم والإرجاع. كل ضرر لم يُذكر عند التسليم يتحمله المكتري."
+  },
+  {
+    numero: 3,
+    titre: "ENTRETIEN ET UTILISATION",
+    contenu:
+      "L’entretien courant (vidange, batterie, pneus, liquide de frein) est pris en charge par la société. Tout dommage résultant d’une mauvaise utilisation, surcharge, négligence, ou usage contraire aux règles est à la charge du locataire.",
+    arabe:
+      "تتحمل الشركة صيانة السيارة الاعتيادية (الزيت، البطارية، العجلات، سائل الفرامل). أما الأعطاب الناتجة عن سوء الاستعمال أو الإهمال فهي من مسؤولية المكتري بالكامل."
+  },
+  {
+    numero: 4,
+    titre: "DESTINATION DU VÉHICULE",
+    contenu:
+      "Le véhicule est exclusivement destiné à un usage personnel et privé. Il est strictement interdit de l’utiliser pour le transport public, InDrive, Uber, taxi ou usage commercial sans autorisation écrite.",
+    arabe:
+      "السيارة مخصصة للاستعمال الشخصي فقط. يُمنع منعًا باتًا استخدامها في النقل العمومي أو تطبيقات النقل المأجور مثل إن درايف أو أوبر أو كطاكسي، أو لأغراض مهنية أو تجارية دون إذن مكتوب."
+  },
+  {
+    numero: 5,
+    titre: "ASSURANCE ET FRANCHISE",
+    contenu:
+      "Le véhicule est assuré en responsabilité civile. En cas d’accident, le locataire prend à sa charge la franchise obligatoire, les frais non couverts par l’assurance (TVA, vétusté, immobilisation), ainsi que tous frais annexes.",
+    arabe:
+      "السيارة مؤمنة ضد المسؤولية المدنية فقط. في حالة وقوع حادث، يتحمل المكتري: مبلغ الفرنشيز المحدد من طرف الشركة، التكاليف غير المغطاة من طرف التأمين، وكل المصاريف الإضافية."
+  },
+  {
+    numero: 6,
+    titre: "MODALITÉS DE PAIEMENT",
+    contenu:
+      "La location est payable d’avance. En cas d’accident, prolongation ou dommage, les montants dus sont calculés et exigibles immédiatement. Tout chèque sans provision fait l’objet d’une plainte au titre de l’article 543 du Code pénal.",
+    arabe:
+      "يُدفع مبلغ الكراء مسبقًا. في حالة الحادث أو التمديد أو الأضرار، يُحسب المبلغ المستحق ويصبح واجب الأداء فوراً. الشيك بدون رصيد يُتابَع بموجب الفصل 543 من القانون الجنائي."
+  },
+  {
+    numero: 7,
+    titre: "DOMMAGES ET IMMOBILISATION",
+    contenu:
+      "Le locataire est responsable de tout dommage, y compris réparations, remorquage, pièces, main-d’œuvre, et les jours d’immobilisation au tarif journalier.",
+    arabe:
+      "المكتري مسؤول عن كل ضرر يلحق بالسيارة، بما في ذلك مصاريف الإصلاح، القطر، قطع الغيار، اليد العاملة، وأيام توقف السيارة حسب الثمن اليومي للكراء."
+  },
+  {
+    numero: 8,
+    titre: "DOCUMENTS DU VÉHICULE",
+    contenu:
+      "Le locataire est tenu de restituer tous les documents (assurance, carte grise, vignette, PV, etc.). En cas de perte ou non-restitution, des pénalités forfaitaires sont appliquées.",
+    arabe:
+      "يجب على المكتري إرجاع جميع الوثائق (التأمين، البطاقة الرمادية، الضريبة، المعاينة...). في حال ضياعها أو عدم إرجاعها، تُطبق غرامات جزافية بالإضافة إلى مصاريف إعادة الإصدار."
+  },
+  {
+    numero: 9,
+    titre: "INFRACTIONS",
+    contenu:
+      "Le locataire est seul responsable des infractions routières, amendes, saisies ou poursuites judiciaires durant la période de location.",
+    arabe:
+      "المكتري هو المسؤول الوحيد عن المخالفات الطرقية، الغرامات، الحجز أو المتابعات القانونية أثناء فترة الكراء."
+  },
+  {
+    numero: 10,
+    titre: "INFRACTIONS PÉNALES",
+    contenu:
+      "Tout acte de falsification, fausse déclaration, chèque sans provision ou usage frauduleux du véhicule constitue un crime puni par le Code pénal (Art. 540, 543, 607-1, 361 à 367).",
+    arabe:
+      "كل تزوير في الوثائق، تصريح كاذب، شيك بدون رصيد أو استعمال احتيالي للسيارة يُعد جريمة تُعاقب عليها الفصول: الفصل 540 (النصب)، الفصل 543 (الشيك بدون رصيد)، الفصل 1-607 (الاختلاس وسوء الاستعمال)، الفصول 361 إلى 367 (التزوير واستعماله)."
+  },
+  {
+    numero: 11,
+    titre: "RÉSILIATION ANTICIPÉE",
+    contenu:
+      "La société se réserve le droit de résilier unilatéralement le contrat à tout moment en cas de manquement grave (non-paiement, fausse déclaration, usage interdit).",
+    arabe:
+      "تحتفظ الشركة بحق فسخ العقد من جانب واحد في أي وقت في حالة ارتكاب المكتري إخلال جسيم."
+  },
+  {
+    numero: 12,
+    titre: "TRIBUNAL COMPÉTENT",
+    contenu:
+      "En cas de litige, le tribunal du ressort territorial du siège social de la société est seul compétent.",
+    arabe:
+      "في حالة النزاع، تكون المحكمة التابعة لمقر الشركة هي الوحيدة المختصة."
+  },
+  {
+    numero: 13,
+    titre: "INTERDICTIONS ABSOLUES",
+    contenu:
+      "Il est strictement interdit de transporter des substances illicites, participer à des courses ou modifier le véhicule.",
+    arabe:
+      "يُمنع منعًا باتًا نقل مواد ممنوعة، المشاركة في سباقات، أو تعديل أي جزء من السيارة."
+  },
+  {
+    numero: 14,
+    titre: "DÉPÔT DE GARANTIE",
+    contenu:
+      "Un dépôt est exigé à la signature. Il peut être conservé en cas de dommage, retard ou litige.",
+    arabe:
+      "يُؤدى مبلغ الضمان عند توقيع العقد ويُحتفظ به في حال وجود أضرار أو تأخير أو نزاع."
+  },
+  {
+    numero: 15,
+    titre: "DÉCLARATION MENSONGÈRE",
+    contenu:
+      "Toute fausse déclaration engage la responsabilité pénale du locataire.",
+    arabe:
+      "كل تصريح كاذب أمام المحكمة أو الشرطة أو الدرك يعرض المكتري للمتابعة القضائية."
+  },
+  {
+    numero: 16,
+    titre: "CLAUSE PÉNALE",
+    contenu:
+      "Tout manquement grave engage une pénalité forfaitaire immédiate de 50 000 MAD.",
+    arabe:
+      "أي إخلال جسيم يلزم المكتري بغرامة فورية قدرها 50.000 درهم."
+  },
+  {
+    numero: 17,
+    titre: "NON-RESTITUTION",
+    contenu:
+      "Tout retard de restitution est considéré comme un détournement et signalé aux autorités compétentes (Art. 607-1 CP).",
+    arabe:
+      "كل تأخير في إرجاع السيارة يُعتبر اختلاسًا ويتم التبليغ عنه فورًا كمحاولة سرقة."
+  },
+  {
+    numero: 18,
+    titre: "GPS ET SÉCURITÉ",
+    contenu:
+      "Toute tentative de désactivation ou sabotage du GPS constitue un acte de sabotage puni par le Code pénal.",
+    arabe:
+      "كل محاولة لتعطيل أو إزالة جهاز التتبع تُعد جريمة تخريب."
+  },
+  {
+    numero: 19,
+    titre: "REPRISE FORCÉE",
+    contenu:
+      "En cas d’abus ou fraude, la société Cherkaoui Auto Rent pourra reprendre le véhicule à tout moment, avec intervention des autorités si nécessaire.",
+    arabe:
+      "في حالة الاستعمال غير المشروع أو النصب، يمكن للشركة استرجاع السيارة في أي وقت ولو بمساعدة السلطات."
+  },
+  {
+    numero: 20,
+    titre: "COMPARUTION",
+    contenu:
+      "Le locataire s’engage à comparaître à toute convocation judiciaire.",
+    arabe:
+      "يتعهد المكتري بالمثول أمام القضاء عند الاستدعاء."
+  },
+  {
+    numero: 21,
+    titre: "RESPONSABILITÉ TOTALE",
+    contenu:
+      "Le véhicule est loué sous assurance responsabilité civile uniquement. En cas d’accident ou panne, le locataire supporte les réparations, remorquage, et retour du véhicule.",
+    arabe:
+      "السيارة مكراة بتأمين المسؤولية المدنية فقط. عند وقوع حادث أو عطب، يتحمل المكتري الإصلاح والقطر وإرجاع السيارة إلى مقر الشركة."
+  },
+  {
+    numero: 22,
+    titre: "INTERDICTION DE SORTIE DU TERRITOIRE",
+    contenu:
+      "Le véhicule ne peut franchir les frontières du Maroc sans autorisation écrite. Tout franchissement est constitutif de crime douanier.",
+    arabe:
+      "يُمنع مغادرة التراب الوطني بالسيارة بدون ترخيص مكتوب من الشركة."
+  },
+  {
+    numero: 23,
+    titre: "DÉFAUT DE PAIEMENT",
+    contenu:
+      "Tout défaut ou refus de paiement est considéré comme escroquerie au sens de l’article 540 du Code pénal.",
+    arabe:
+      "كل امتناع عن الأداء يُعد نصبًا طبقًا للفصل 540 من القانون الجنائي."
+  },
+  {
+    numero: 24,
+    titre: "RECONNAISSANCE DE DETTE",
+    contenu:
+      "Le locataire reconnaît que tout montant dû inscrit dans le contrat constitue une dette certaine, liquide et exigible.",
+    arabe:
+      " يُقر المكتري بأن كل مبلغ وارد في العقد هو دين ثابت، واجب الأداء."
+  },
+  {
+    numero:25,
+    contenu:" Le locataire est le seul responsable de délits contraventions de la circulation routière.",
+    arabe:"المستأجر هو المسؤول الوحيد عن المخالفات المرورية"
+
+  }
+];
+ const leftColumn = contractArticles.slice(0,10);
+const rightColumn = contractArticles.slice(10, 24);
+
+const lastArticle = contractArticles[contractArticles.length - 1];
 
 const ContractGenerator = () => {
   const [formData, setFormData] = useState({
     // Données du loueur
-    loueurAdresse: '',
-    loueurVille: '',
-    loueurRC: '',
-    loueurPatente: '',
-    loueurICE: '',
-    loueurIF: '',
-    loueurRepresentant: '',
-    loueurTel: '',
-    
+    loueurAdresse: "",
+    loueurVille: "",
+    loueurRC: "",
+    loueurPatente: "",
+    loueurICE: "",
+    loueurIF: "",
+    loueurRepresentant: "",
+    loueurTel: "",
+
     // Données du locataire
-    locataireNomPrenom: '',
-    locataireCIN: '',
-    locataireNaissance: '',
-    locataireAdresse: '',
-    locataireVille: '',
-    locataireTel: '',
-    locatairePermis: '',
-    locatairePermisDate: '',
-    locataireNationalite: '',
-    
+    locataireNomPrenom: "",
+    locataireCIN: "",
+    locataireNaissance: "",
+    locataireAdresse: "",
+    locataireVille: "",
+    locataireTel: "",
+    locatairePermis: "",
+    locatairePermisDate: "",
+    locataireNationalite: "",
+
     // Données du véhicule
-    vehiculeMarque: '',
-    vehiculeImmat: '',
-    vehiculeChassis: '',
-    vehiculeKm: '',
-    vehiculeCarburant: '',
-    vehiculeEtat: '',
-    
+    vehiculeMarque: "",
+    vehiculeImmat: "",
+    vehiculeChassis: "",
+    vehiculeKm: "",
+    vehiculeCarburant: "",
+    vehiculeEtat: "",
+
     // Données de location
-    dateDebut: '',
-    dateFin: '',
-    lieuPrise: '',
-    lieuRestitution: '',
-    
+    dateDebut: "",
+    dateFin: "",
+    lieuPrise: "",
+    lieuRestitution: "",
+
     // Tarification
-    tarifJournalier: '',
-    kmInclus: '',
-    tarifKmSupp: '',
-    franchiseAssurance: '',
-    depotGarantie: '',
-    montantTotal: '',
-    
+    tarifJournalier: "",
+    kmInclus: "",
+    tarifKmSupp: "",
+    franchiseAssurance: "",
+    depotGarantie: "",
+    montantTotal: "",
+
     // Carburant
-    tarifCarburant: '',
-    
+    tarifCarburant: "",
+
     // Conducteur supplémentaire
-    conducteurSupp: '',
-    conducteurSuppPermis: '',
-    conducteurSuppTarif: '',
-    
+    conducteurSupp: "",
+    conducteurSuppPermis: "",
+    conducteurSuppTarif: "",
+    conducteurSuppTel: "",
+
     // Options
     assuranceBrisGlace: false,
-    assuranceBrisGlaceTarif: '',
+    assuranceBrisGlaceTarif: "",
     gps: false,
-    gpsTarif: '',
+    gpsTarif: "",
     siegeEnfant: false,
-    siegeEnfantTarif: '',
+    siegeEnfantTarif: "",
     chauffeur: false,
-    chauffeurTarif: '',
-    
+    chauffeurTarif: "",
+
     // Lieu et date de signature
-    lieuSignature: '',
-    dateSignature: '',
-    
+    lieuSignature: "",
+    dateSignature: "",
+
     // Tribunal compétent
-    tribunalCompetent: '',
-    
+    tribunalCompetent: "",
+
     // Contact
-    contactTel: '',
-    contactEmail: ''
+    contactTel: "",
+    contactEmail: "",
   });
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: type === "checkbox" ? checked : value,
     }));
   };
 
@@ -89,79 +297,75 @@ const ContractGenerator = () => {
     window.print();
   };
 
-
-
-
-const handleDownloadPDF = async () => {
-  const contract = document.getElementById("contract-content");
-  if (!contract) {
-    console.error('error dans contract content ');
-    return;
-  }
-  contract.classList.add("force-simple-colors");
-  try {
-    await new Promise(res => setTimeout(res, 100));
-    // Charger le script html2pdf si non déjà présent
-    function loadHtml2PdfScript() {
-      return new Promise((resolve, reject) => {
-        if (window.html2pdf) return resolve(window.html2pdf);
-        // Correction du chemin pour Vite/React : placer html2pdf.bundle.min.js dans le dossier public et charger depuis /lib/
-        let script = document.createElement('script');
-        script.src = '/lib/html2pdf.bundle.min.js';
-        script.onload = () => resolve(window.html2pdf);
-        script.onerror = reject;
-        document.body.appendChild(script);
-      });
+  const handleDownloadPDF = async () => {
+    const contract = document.getElementById("contract-content");
+    if (!contract) {
+      console.error("error dans contract content ");
+      return;
     }
-    const html2pdf = window.html2pdf || await loadHtml2PdfScript();
-    if (!html2pdf) {
-      throw new Error('html2pdf.js non chargé');
+    contract.classList.add("force-simple-colors");
+    try {
+      await new Promise((res) => setTimeout(res, 100));
+      // Charger le script html2pdf si non déjà présent
+      function loadHtml2PdfScript() {
+        return new Promise((resolve, reject) => {
+          if (window.html2pdf) return resolve(window.html2pdf);
+          // Correction du chemin pour Vite/React : placer html2pdf.bundle.min.js dans le dossier public et charger depuis /lib/
+          let script = document.createElement("script");
+          script.src = "/lib/html2pdf.bundle.min.js";
+          script.onload = () => resolve(window.html2pdf);
+          script.onerror = reject;
+          document.body.appendChild(script);
+        });
+      }
+      const html2pdf = window.html2pdf || (await loadHtml2PdfScript());
+      if (!html2pdf) {
+        throw new Error("html2pdf.js non chargé");
+      }
+      html2pdf()
+        .set({
+          margin: 0,
+          filename:`Contrat_${formData.locataireNomPrenom}.pdf`,
+          image: { type: "jpeg", quality: 0.98 },
+          html2canvas: { scale: 2, useCORS: true },
+          jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+          pagebreak: { mode: ["avoid-all", "css", "legacy"] },
+        })
+        .from(contract)
+        .save()
+        .catch((err) => {
+          console.error("Erreur génération PDF :", err);
+        })
+        .finally(() => {
+          contract.classList.remove("force-simple-colors");
+        });
+    } catch (err) {
+      console.error("Erreur génération PDF :", err);
+      contract.classList.remove("force-simple-colors");
     }
-    html2pdf()
-      .set({
-        margin:       0,
-        filename:     'Contrat.pdf',
-        image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2, useCORS: true },
-        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
-        pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
-      })
-      .from(contract)
-      .save()
-      .catch(err => {
-        console.error("Erreur génération PDF :", err);
-      })
-      .finally(() => {
-        contract.classList.remove("force-simple-colors");
-      });
-  } catch (err) {
-    console.error("Erreur génération PDF :", err);
-    contract.classList.remove("force-simple-colors");
-  }
-};
-
- 
-
+  };
 
   return (
     <div className="contract-generator">
-    
-       <div className="form-section">
-  <h2>Informations du contrat</h2>
-  
-  <div className="form-actions">
-    <button onClick={handlePrint} className="btn btn-primary">
-      Imprimer
-    </button>
-    <button type="button" onClick={handleDownloadPDF} className="btn btn-secondary">
-      Télécharger PDF
-    </button>
-  </div>
+      <div className="form-section">
+        <h2>Informations du contrat</h2>
+        <div className="form-actions">
+          <button onClick={handlePrint} className="btn btn-primary">
+            Imprimer
+          </button>
+          <button
+            type="button"
+            onClick={handleDownloadPDF}
+            className="btn btn-secondary"
+          >
+            Télécharger PDF
+          </button>
+        </div>
 
-  <form className="contract-form">
-    {/* Informations Loueur et Locataire sur la même ligne */}
-    <div className="form-row-double">
-      {/* <div className="form-group half-width">
+        <form className="contract-form">
+          {/* Informations Loueur et Locataire sur la même ligne */}
+          <div className="form-row-double">
+            {/* <div className="form-group half-width">
         <h3>Informations du loueur</h3>
         <div className="form-row">
           <input
@@ -190,546 +394,451 @@ const handleDownloadPDF = async () => {
         </div>
       </div> */}
 
-      <div className="form-group half-width">
-        <h3>Informations du locataire</h3>
-        <div className="form-row">
-          <input
-            type="text"
-            name="locataireNomPrenom"
-            placeholder="Nom et prénom"
-            value={formData.locataireNomPrenom}
-            onChange={handleInputChange}
-          />
-          <input
-            type="text"
-            name="locataireCIN"
-            placeholder="N° CIN/Passeport"
-            value={formData.locataireCIN}
-            onChange={handleInputChange}
-          />
-        </div>
-        <div className="form-row">
-          <input
-            type="tel"
-            name="locataireTel"
-            placeholder="Téléphone du locataire"
-            value={formData.locataireTel}
-            onChange={handleInputChange}
-          />
-          <input
-            type="text"
-            name="locatairePermis"
-            placeholder="N° de permis de conduire"
-            value={formData.locatairePermis}
-            onChange={handleInputChange}
-          />
-        </div>
-        <div className="form-row">
-          <input
-            type="date"
-            name="locatairePermisDate"
-            placeholder="Date d'obtention du permis"
-            value={formData.locatairePermisDate}
-            onChange={handleInputChange}
-          />
-        </div>
-      </div>
-       <div className="form-group half-width">
-        <h3>Conducteur supplémentaire</h3>
-        <div className="form-row">
-          <input
-            type="text"
-            name="conducteurSupp"
-            placeholder="Nom complet du conducteur supplémentaire"
-            value={formData.conducteurSupp}
-            onChange={handleInputChange}
-          />
-        </div>
-        <div className="form-row">
-          <input
-            type="text"
-            name="conducteurSuppPermis"
-            placeholder="N° permis conducteur supplémentaire"
-            value={formData.conducteurSuppPermis}
-            onChange={handleInputChange}
-          />
-        </div>
-      </div>
-    </div>
+            <div className="form-group half-width">
+              <h3>Informations du locataire</h3>
+              <div className="form-row">
+                <input
+                  type="text"
+                  name="locataireNomPrenom"
+                  placeholder="Nom et prénom"
+                  value={formData.locataireNomPrenom}
+                  onChange={handleInputChange}
+                />
+                <input
+                  type="text"
+                  name="locataireCIN"
+                  placeholder="N° CIN/Passeport"
+                  value={formData.locataireCIN}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div className="form-row">
+                <input
+                  type="tel"
+                  name="locataireTel"
+                  placeholder="Téléphone du locataire"
+                  value={formData.locataireTel}
+                  onChange={handleInputChange}
+                />
 
-    {/* Véhicule et Conditions tarifaires sur la même ligne */}
-    <div className="form-row-double">
-      <div className="form-group half-width">
-        <h3>Informations du véhicule</h3>
-        <div className="form-row">
-          <input
-            type="text"
-            name="vehiculeMarque"
-            placeholder="Marque et modèle"
-            value={formData.vehiculeMarque}
-            onChange={handleInputChange}
-          />
-          <input
-            type="text"
-            name="vehiculeImmat"
-            placeholder="N° d'immatriculation"
-            value={formData.vehiculeImmat}
-            onChange={handleInputChange}
-          />
-        </div>
-        <div className="form-row">
-          <input
-            type="number"
-            name="vehiculeKm"
-            placeholder="Kilométrage au départ"
-            value={formData.vehiculeKm}
-            onChange={handleInputChange}
-          />
-        </div>
-      </div>
+                <input
+                  type="text"
+                  name="locatairePermis"
+                  placeholder="N° de permis de conduire"
+                  value={formData.locatairePermis}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div className="form-row">
+                <input
+                  type="date"
+                  name="locatairePermisDate"
+                  placeholder="Date d'obtention du permis"
+                  value={formData.locatairePermisDate}
+                  onChange={handleInputChange}
+                />
+              </div>
+            </div>
+            <div className="form-group half-width">
+              <h3>Conducteur supplémentaire</h3>
+              <div className="form-row">
+                <input
+                  type="text"
+                  name="conducteurSupp"
+                  placeholder="Nom complet du conducteur supplémentaire"
+                  value={formData.conducteurSupp}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div className="form-row">
+                <input
+                  type="text"
+                  name="conducteurSuppPermis"
+                  placeholder="N° permis conducteur supplémentaire"
+                  value={formData.conducteurSuppPermis}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div className="form-row">
+                <input
+                  type="tel"
+                  name="conducteurSupplocataireTel"
+                  placeholder="Téléphone du locataire supplémentaire"
+                  value={formData.conducteurSupplocataireTel}
+                  onChange={handleInputChange}
+                />
+              </div>
+            </div>
+          </div>
 
-      <div className="form-group half-width">
-        <h3>Conditions tarifaires</h3>
-        <div className="form-row">
-          <input
-            type="number"
-            name="depotGarantie"
-            placeholder="Dépôt de garantie (DH)"
-            value={formData.depotGarantie}
-            onChange={handleInputChange}
-          />
-        </div>
-        <div className="form-row">
-          <input
-            type="number"
-            name="prixParJour"
-            placeholder="Prix par jour (DH)"
-            value={formData.prixParJour}
-            onChange={handleInputChange}
-          />
-          <input
-            type="number"
-            name="nombreJours"
-            placeholder="Nombre de jours"
-            value={formData.nombreJours}
-            onChange={handleInputChange}
-          />
-        </div>
-        <div className="form-row">
-          <input
-            type="number"
-            name="montantTotal"
-            placeholder="Montant total TTC (DH)"
-            value={(parseFloat(formData.prixParJour) || 0) * (parseInt(formData.nombreJours) || 0)}
-            onChange={handleInputChange}
-            readOnly
-            style={{ backgroundColor: '#f9f9f9' }}
-          />
-        </div>
-      </div>
-    </div>
+          {/* Véhicule et Conditions tarifaires sur la même ligne */}
+          <div className="form-row-double">
+            <div className="form-group half-width">
+              <h3>Informations du véhicule</h3>
+              <div className="form-row">
+                <input
+                  type="text"
+                  name="vehiculeMarque"
+                  placeholder="Marque et modèle"
+                  value={formData.vehiculeMarque}
+                  onChange={handleInputChange}
+                />
+                <input
+                  type="text"
+                  name="vehiculeImmat"
+                  placeholder="N° d'immatriculation"
+                  value={formData.vehiculeImmat}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div className="form-row">
+                <input
+                  type="number"
+                  name="vehiculeKm"
+                  placeholder="Kilométrage au départ"
+                  value={formData.vehiculeKm}
+                  onChange={handleInputChange}
+                />
+              </div>
+            </div>
 
-    {/* Conducteur supplémentaire et Signature sur la même ligne */}
-    <div className="form-row-double">
-     
+            <div className="form-group half-width">
+              <h3>Conditions tarifaires</h3>
+              <div className="form-row">
+                <input
+                  type="number"
+                  name="depotGarantie"
+                  placeholder="Dépôt de garantie (DH)"
+                  value={formData.depotGarantie}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div className="form-row">
+                <input
+                  type="number"
+                  name="prixParJour"
+                  placeholder="Prix par jour (DH)"
+                  value={formData.prixParJour}
+                  onChange={handleInputChange}
+                />
+                <input
+                  type="number"
+                  name="nombreJours"
+                  placeholder="Nombre de jours"
+                  value={formData.nombreJours}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div className="form-row">
+                <input
+                  type="number"
+                  name="montantTotal"
+                  placeholder="Montant total TTC (DH)"
+                  value={
+                    (parseFloat(formData.prixParJour) || 0) *
+                    (parseInt(formData.nombreJours) || 0)
+                  }
+                  onChange={handleInputChange}
+                  readOnly
+                  style={{ backgroundColor: "#f9f9f9" }}
+                />
+              </div>
+            </div>
+          </div>
 
-      <div className="form-group half-width">
-        <h3>Signature et contact</h3>
-        <div className="form-row">
-          <input
-            type="text"
-            name="lieuSignature"
-            placeholder="Lieu de signature"
-            value={formData.lieuSignature}
-            onChange={handleInputChange}
-          />
-          <input
-            type="date"
-            name="dateSignature"
-            placeholder="Date de signature"
-            value={formData.dateSignature}
-            onChange={handleInputChange}
-          />
-        </div>
-        <div className="form-row">
-          <input
-            type="tel"
-            name="contactTel"
-            placeholder="Téléphone de contact"
-            value={formData.contactTel}
-            onChange={handleInputChange}
-          />
-          <input
-            type="email"
-            name="contactEmail"
-            placeholder="Email de contact"
-            value="Cherkaoui.autorent@gmail.com"
-            onChange={handleInputChange}
-          />
-        </div>
+          {/* Conducteur supplémentaire et Signature sur la même ligne */}
+          <div className="form-row-double">
+            <div className="form-group half-width">
+              <h3>DURÉE ET LIEU DE LA LOCATION</h3>
+              <div className="form-row">
+                <input
+                  type="text"
+                  name="lieuPrise"
+                  placeholder="Lieu de Depart"
+                  value={formData.lieuPrise}
+                  onChange={handleInputChange}
+                />
+                <input
+                  type="date"
+                  name="dateDebut"
+                  placeholder="Date de signature"
+                  value={formData.dateDebut}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div className="form-row">
+                <input
+                  type="text"
+                  name="lieuRestitution"
+                  placeholder="Lieu de Retour"
+                  value={formData.lieuRestitution}
+                  onChange={handleInputChange}
+                />
+                <input
+                  type="Date"
+                  name="dateFin"
+                  placeholder="Date de Retour"
+                  value={formData.dateFin}
+                  onChange={handleInputChange}
+                />
+              </div>
+            </div>
+          </div>
+        </form>
       </div>
-    </div>
-  </form>
-</div>
-      
-    
-      <hr className="separtor"/>
+      <hr className="separtor" />
       <div className="contract-preview" id="contract-content">
+        
         <div className="contract-header">
-          <h1>CONTRAT DE LOCATION DE VÉHICULE</h1>
+          <h1>
+            <strong>CONTRAT</strong>
+          </h1>
+          <div className="LOGO">
+            <img src={logo} alt="logo" />
+          </div>
           <h2>STE CHERKAOUI AUTO RENT</h2>
         </div>
 
         <div className="contract-section">
-          <h3>PARTIES CONTRACTANTES</h3>
-          
-          <div className="party-section">
-            <h4> <strong>LOUEUR :</strong></h4>
-            <ul>
-              <li><strong>Raison sociale :</strong> CHERKAOUI AUTO RENT</li>
-              <li><strong>Registre de Commerce :</strong> {formData.loueurRC || '________________________'}</li>
-              <li><strong>Représenté par :</strong> {formData.loueurRepresentant || '________________________'}</li>
-              <li><strong>Tél :</strong> +212 6 45 84 86 86</li>
-            </ul>
-          </div>
-
-          <div className="party-section">
-            <h4><strong>LOCATAIRE :</strong></h4>
-            <ul>
-              <li><strong>Nom et prénom :</strong> {formData.locataireNomPrenom || '________________________'}</li>
-              <li><strong>N° CIN/Passeport :</strong> {formData.locataireCIN || '________________________'}</li>
-              <li><strong>N° de téléphone :</strong> {formData.locataireTel || '________________________'}</li>
-              <li><strong>N° de permis de conduire :</strong> {formData.locatairePermis || '________________________'}</li>
-              <li><strong>Date d'obtention du permis :</strong> {formData.locatairePermisDate || '________________________'}</li>
-            </ul>
-          </div>
-        </div>
-
-        <div className="contract-section">
-          <h3>ARTICLE 1 - OBJET DU CONTRAT</h3>
-          <p>Le présent contrat, établi conformément au <strong><i>Dahir des Obligations et Contrats (DOC) marocain</i></strong> , a pour objet la location du véhicule ci-dessous désigné :</p>
-          
-          <div className="vehicle-section">
-            <h4>VÉHICULE LOUÉ :</h4>
-            <ul>
-              <li><strong>Marque et modèle :</strong> {formData.vehiculeMarque || '________________________'}</li>
-              <li><strong>N° d'immatriculation :</strong> {formData.vehiculeImmat || '________________________'}</li>
-              <li><strong>Kilométrage au départ :</strong> {formData.vehiculeKm || '________________________'} km</li>
-            </ul>
-          </div>
-        </div>
-
-        <div className="contract-section">
-          <h3>ARTICLE 2 - DURÉE ET LIEU DE LA LOCATION</h3>
-          <ul>
-            <li><strong>Date et heure de début :</strong> {formData.dateDebut || '________________________'}</li>
-            <li><strong>Date et heure de fin prévue :</strong> {formData.dateFin || '________________________'}</li>
-            <li><strong>Lieu de prise en charge :</strong> {formData.lieuPrise || '________________________'}</li>
-            <li><strong>Lieu de restitution :</strong> {formData.lieuRestitution || '________________________'}</li>
-          </ul>
-        </div>
-
-        <div className="contract-section">
-          <h3>ARTICLE 3 - CONDITIONS TARIFAIRES</h3>
-          <ul>
-            <li><strong>Tarif journalier :</strong> {formData.prixParJour || '________________________'} DH/jour</li> 
-            <li><strong>Dépôt de garantie :</strong> {formData.depotGarantie || '________________________'} DH</li>
-            <li><strong>Taxe sur la valeur ajoutée (TVA 20%) :</strong> Incluse/Non incluse</li>
-          </ul>
-          <p><strong>MONTANT TOTAL TTC :</strong> {(parseFloat(formData.prixParJour) || 0) * (parseInt(formData.nombreJours) || 0)|| '________________________'} DH</p>
-        </div>
-
-        {/* Articles 4-13 restent statiques */}
-        <div className="contract-section">
-          <h3>ARTICLE 4 - CONDITIONS D'UTILISATION</h3>
-          <h4>4.1 Usage autorisé</h4>
-          <p>Le locataire s'engage à :</p>
-          <ul>
-            <li>Utiliser le véhicule conformément au Code de la route marocain</li>
-            <li>Respecter les limitations de vitesse et la réglementation en vigueur</li>
-            <li>Ne pas conduire sous l'influence d'alcool ou de substances illicites</li>
-            <li>Ne pas transporter plus de passagers que prévu</li>
-            <li>Maintenir le véhicule en bon état de propreté</li>
-          </ul>
-          
-          <h4>4.2 Usage interdit</h4>
-          <p>Il est strictement interdit de :</p>
-          <ul>
-            <li>Sous-louer ou prêter le véhicule à des tiers non autorisés</li>
-            <li>Utiliser le véhicule pour des activités illégales</li>
-            <li>Conduire hors des routes goudronnées sans autorisation</li>
-            <li>Transporter des marchandises dangereuses</li>
-            <li>Participer à des courses ou rallyes</li>
-          </ul>
-        </div>
-
-        <div className="contract-section">
-          <h3>ARTICLE 5 - ASSURANCE ET RESPONSABILITÉ</h3>
-          <h4>5 Couverture d'assurance</h4>
-          <p>Le véhicule est assuré conformément aux dispositions de la loi <strong><i>n° 17-99</i></strong>  portant Code des assurances </p>
-        </div>
-
-        <div className="contract-section">
-          <h3>ARTICLE 6 - OBLIGATIONS DU LOCATAIRE</h3>
-          <p>Le locataire s'engage à :</p>
-          <ul>
-            <li>Présenter un permis de conduire valide (minimum 1 an d'ancienneté)</li>
-            <li>Vérifier l'état du véhicule lors de la prise en charge</li>
-            <li>Effectuer les vérifications quotidiennes (huile, eau, freins)</li>
-            <li>Signaler immédiatement toute panne ou incident</li>
-            <li>Respecter les dates et heures de restitution</li>
-            <li>Acquitter toutes les amendes et contraventions</li>
-          </ul>
-        </div>
-
-
-        <div className="contract-section">
-          <h3>ARTICLE 7 - RESTITUTION DU VÉHICULE</h3>
-          <h4>7.1 Modalités</h4>
-          <p>Le véhicule doit être restitué :</p>
-          <ul>
-            <li>À la date et heure convenues (tolérance : 1 heure)</li>
-            <li>Au lieu prévu au contrat</li>
-            <li>En parfait état de fonctionnement et de propreté</li>
-            <li>Avec tous les équipements et documents de bord</li>
-          </ul>
-          
-          <h4>7.2 Retard</h4>
-          <p>Tout retard supérieur à 1 heure entraîne la facturation d'une journée supplémentaire complète.</p>
-        </div>
-
-        <div className="contract-section">
-          <h3>ARTICLE 8 - GARANTIE ET PAIEMENT</h3>
-          <h4>8.1 Dépôt de garantie</h4>
-          <p>Un dépôt de garantie de {formData.depotGarantie || '________________________'} DH est exigé :</p>
-          <ul>
-            <li>En espèces ou par carte bancaire</li>
-            <li>Bloqué pendant la durée de location</li>
-          </ul>
-          
-          <h4>8.2 Utilisation de la garantie</h4>
-          <p>La garantie couvre :</p>
-          <ul>
-            <li>Les dégradations constatées</li>
-            <li>Les amendes et contraventions</li>
-            <li>Les frais de remorquage en cas de négligence</li>
-            <li>La franchise d'assurance</li>
-          </ul>
-          
-          <h4>8.3 Paiement</h4>
-          <p>Le règlement s'effectue :</p>
-          <ul>
-            <li>Intégralement à la signature du contrat</li>
-            <li>En dirhams marocains uniquement</li>
-            <li>Par espèces, carte bancaire ou virement</li>
-          </ul>
-        </div>
-
-        <div className="contract-section">
-          <h3>ARTICLE 9- INCIDENTS ET SINISTRES</h3>
-          <h4>9.1 En cas d'accident</h4>
-          <p>Le locataire doit :</p>
-          <ul>
-            <li>Établir un constat amiable avec les parties concernées</li>
-            <li>Alerter les autorités compétentes si nécessaire</li>
-            <li>Prévenir Cherkaoui Auto Rent dans les 2 heures</li>
-            <li>Transmettre tous documents dans les 48 heures</li>
-          </ul>
-          
-          <h4>9.2 En cas de vol</h4>
-          <ul>
-            <li>Porter plainte immédiatement au commissariat le plus proche</li>
-            <li>Informer Cherkaoui Auto Rent dans l'heure</li>
-            <li>Fournir le récépissé de plainte sous 24 heures</li>
-          </ul>
-          
-          <h4>9.3 Assistance dépannage</h4>
-          <p>Cherkaoui Auto Rent assure une assistance 24h/24 sur l'ensemble du territoire marocain.</p>
-        </div>
-
-        <div className="contract-section">
-          <h3>ARTICLE 10 - DONNÉES PERSONNELLES</h3>
-          <p>Conformément à la loi <strong><i>n° 09-08</i></strong> relative à la protection des personnes physiques à l'égard du traitement des données à caractère personnel, les données collectées sont nécessaires à l'exécution du présent contrat et à la gestion de la location.</p>
-        </div>
-
-        <div className="contract-section">
-          <h3>ARTICLE 11 - RÉSILIATION</h3>
-          <p>Le présent contrat peut être résilié de plein droit par Cherkaoui Auto Rent en cas de :</p>
-          <ul>
-            <li>Non-respect des conditions contractuelles</li>
-            <li>Défaut de paiement</li>
-            <li>Usage non conforme du véhicule</li>
-            <li>Fausse déclaration du locataire</li>
-          </ul>
-        </div>
-
-        <div className="contract-section">
-          <h3>ARTICLE 12 - FORCE MAJEURE</h3>
-          <p>Les parties ne peuvent être tenues responsables de l'inexécution de leurs obligations en cas de force majeure reconnue par la jurisprudence marocaine.</p>
-        </div>
-
-        
-
-        <div className="contract-section">
-          <h3>ARTICLE 13 - DISPOSITIONS DIVERSES</h3>
-          <h4>13. Conducteurs supplémentaires</h4>
-          <p>Conducteur supplémentaire autorisé :</p>
-          <ul>
-            <li><strong>Nom et prénom:</strong> {formData.conducteurSupp || '________________________'}</li>
-            <li><strong>N° permis :</strong> {formData.conducteurSuppPermis || '________________________'}</li>
-            
-          </ul>
-          
-        </div>
-
-        <div className="contract-section">
-          <h3>SIGNATURES</h3>
-          <p><strong>Fait à {formData.lieuSignature || '________________________'}, le {formData.dateSignature || '________________________'}</strong></p>
-          <p><strong>Lu et approuvé</strong></p>
-          
-          <div className="signatures">
-            <div className="signature-left">
-              <p><strong>CHERKAOUI AUTO RENT</strong></p>
-              <p>Le représentant</p>
-              <p>(Nom, qualité, signature et cachet)</p>
-              <div className="signature-line">_________________________________</div>
+          <div className="locataire">
+            <div className="party-section">
+              <h4>
+                {" "}
+                <strong>Informations Société :</strong>
+              </h4>
+              <ul>
+                <li>
+                  <strong>Raison sociale :</strong> CHERKAOUI AUTO RENT
+                </li>
+                <li>
+                  <strong>Registre de Commerce :</strong>{" "}
+                  {formData.loueurRC || "________________________"}
+                </li>
+                <li>
+                  <strong>Représenté par : </strong>Cherkaoui Bartote{" "}
+                </li>
+                <li>
+                  <strong>Tél :</strong> +212 6 45 84 86 86
+                </li>
+                <li>
+                  <strong>Email :</strong> Cherkaoui.autorent@gmail.com
+                </li>
+              </ul>
             </div>
-            <div className="signature-right">
-              <p><strong>LE LOCATAIRE</strong></p>
-              <p>(Nom, prénom et signature)</p>
-              <div className="signature-line">_________________________________</div>
+            <div className="party-section">
+              <h4>
+                <strong>Infomations Locataire:</strong>
+              </h4>
+              <ul>
+                <li>
+                  <strong>Nom et prénom :</strong>{" "}
+                  {formData.locataireNomPrenom || "________________________"}
+                </li>
+                <li>
+                  <strong>N° CIN/Passeport :</strong>{" "}
+                  {formData.locataireCIN || "________________________"}
+                </li>
+                <li>
+                  <strong>N° de téléphone :</strong>{" "}
+                  {formData.locataireTel || "________________________"}
+                </li>
+                <li>
+                  <strong>N° de permis de conduire :</strong>{" "}
+                  {formData.locatairePermis || "________________________"}
+                </li>
+                <li>
+                  <strong>Date d'obtention du permis :</strong>{" "}
+                  {formData.locatairePermisDate || "________________________"}
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div className="contract-section">
+          <div className="locataire">
+            <div className="party-section">
+              <h4>VÉHICULE LOUÉ :</h4>
+              <ul>
+                <li>
+                  <strong>Marque et modèle :</strong>{" "}
+                  {formData.vehiculeMarque || ""}
+                </li>
+                <li>
+                  <strong>N° d'immatriculation :</strong>{" "}
+                  {formData.vehiculeImmat || ""}
+                </li>
+                <li>
+                  <strong>Kilométrage au départ :</strong>{" "}
+                  {formData.vehiculeKm || ""} km
+                </li>
+              </ul>
+            </div>
+            <div className="party-section">
+              <h3>Conducteurs supplémentaires</h3>
+
+              <ul>
+                <li>
+                  <strong>Nom et prénom:</strong>{" "}
+                  {formData.conducteurSupp || ""}
+                </li>
+                <li>
+                  <strong>N° permis :</strong>{" "}
+                  {formData.conducteurSuppPermis || ""}
+                </li>
+                <li>
+                  <strong>Tél :</strong>{" "}
+                  {formData.conducteurSupplocataireTel || ""}
+                </li>
+              </ul>
             </div>
           </div>
         </div>
 
         <div className="contract-section">
-          <h3>ÉTAT DES LIEUX CONTRADICTOIRE</h3>
-          <table className="inspection-table">
-            <thead>
-              <tr>
-                <th>ÉLÉMENT À VÉRIFIER</th>
-                <th>DÉPART</th>
-                <th>RETOUR</th>
-                <th>OBSERVATIONS</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><strong>Carrosserie</strong></td>
-                <td></td>
-                <td></td>
-                <td></td>
-              </tr>
-              <tr>
-                <td>- Avant</td>
-                <td>☐ BE ☐ Rayures ☐ Chocs</td>
-                <td>☐ BE ☐ Rayures ☐ Chocs</td>
-                <td></td>
-              </tr>
-              <tr>
-                <td>- Arrière</td>
-                <td>☐ BE ☐ Rayures ☐ Chocs</td>
-                <td>☐ BE ☐ Rayures ☐ Chocs</td>
-                <td></td>
-              </tr>
-              <tr>
-                <td>- Côté droit</td>
-                <td>☐ BE ☐ Rayures ☐ Chocs</td>
-                <td>☐ BE ☐ Rayures ☐ Chocs</td>
-                <td></td>
-              </tr>
-              <tr>
-                <td>- Côté gauche</td>
-                <td>☐ BE ☐ Rayures ☐ Chocs</td>
-                <td>☐ BE ☐ Rayures ☐ Chocs</td>
-                <td></td>
-              </tr>
-              <tr>
-                <td><strong>Vitres et pare-brise</strong></td>
-                <td>☐ BE ☐ Fissures ☐ Éclats</td>
-                <td>☐ BE ☐ Fissures ☐ Éclats</td>
-                <td></td>
-              </tr>
-              <tr>
-                <td><strong>Pneumatiques</strong></td>
-                <td>☐ BE ☐ Usure ☐ Crevaison</td>
-                <td>☐ BE ☐ Usure ☐ Crevaison</td>
-                <td></td>
-              </tr>
-              <tr>
-                <td><strong>Habitacle</strong></td>
-                <td>☐ Propre ☐ Taches ☐ Déchirures</td>
-                <td>☐ Propre ☐ Taches ☐ Déchirures</td>
-                <td></td>
-              </tr>
-              <tr>
-                <td><strong>Équipements de série</strong></td>
-                <td></td>
-                <td></td>
-                <td></td>
-              </tr>
-              <tr>
-                <td>- Trousse de secours</td>
-                <td>☐ Présente</td>
-                <td>☐ Présente</td>
-                <td></td>
-              </tr>
-              <tr>
-                <td>- Triangle de signalisation</td>
-                <td>☐ Présent</td>
-                <td>☐ Présent</td>
-                <td></td>
-              </tr>
-              <tr>
-                <td>- Cric et outils</td>
-                <td>☐ Complets</td>
-                <td>☐ Complets</td>
-                <td></td>
-              </tr>
-              <tr>
-                <td>- Carte grise</td>
-                <td>☐ Présente</td>
-                <td>☐ Présente</td>
-                <td></td>
-              </tr>
-              <tr>
-                <td>- Vignette d'assurance</td>
-                <td>☐ À jour</td>
-                <td>☐ À jour</td>
-                <td></td>
-              </tr>
-            </tbody>
-          </table>
+          <div className="locataire">
+            <div className="party-section">
+              <h3> DURÉE ET LIEU DE LA LOCATION</h3>
+
+              <ul>
+                <li>
+                  <strong>Date et heure de début :</strong>{" "}
+                  {formData.dateDebut || ""}
+                </li>
+                <li>
+                  <strong>Date et heure de fin prévue :</strong>{" "}
+                  {formData.dateFin || ""}
+                </li>
+                <li>
+                  <strong>Lieu de prise en charge :</strong>{" "}
+                  {formData.lieuPrise || ""}
+                </li>
+                <li>
+                  <strong>Lieu de restitution :</strong>{" "}
+                  {formData.lieuRestitution || ""}
+                </li>
+              </ul>
+            </div>
+            <div className="party-section">
+              <h3> CONDITIONS TARIFAIRES</h3>
+              <ul>
+                <li>
+                  <strong>Tarif journalier :</strong>{" "}
+                  {formData.prixParJour || ""} DH/jour
+                </li>
+                <li>
+                  <strong>Dépôt de garantie :</strong>{" "}
+                  {formData.depotGarantie || ""} DH
+                </li>
+                {/* <li>
+                  <strong>Taxe sur la valeur ajoutée (TVA 20%) :</strong>{" "}
+                  Incluse/Non incluse
+                </li> */}
+              </ul>
+              <p>
+                <strong>MONTANT TOTAL TTC :</strong>{" "}
+                {(parseFloat(formData.prixParJour) || 0) *
+                  (parseInt(formData.nombreJours) || 0) || ""}{" "}
+                DH
+              </p>
+            </div>
+          </div>
+        </div>
+        <div className="contract-section">
+          <div className="party-section-loi">
+            <p>
+              <strong>
+                <i>
+                  *{lastArticle.contenu}
+                  <br />
+                </i>
+                <span style={{
+          fontFamily: 'Tahoma, Arial, sans-serif',
+          direction: 'rtl',
+          textAlign: 'center'
+        }}
+                 >
+                  {lastArticle.arabe}*
+                </span>
+              </strong>
+            </p>
+          </div>
+        </div>
+        {/* signature */}
+        <div className="contract-section signature-section" >
+
+          <div className="locataire-section" >
           
-          <div className="inspection-footer">
-            <p><strong>Kilométrage :</strong> __________ km &nbsp;&nbsp;&nbsp;&nbsp; <strong>Carburant :</strong> __________</p>
-            
-            <div className="inspection-signatures">
-              <div>
-                <p><strong>Signatures de l'état des lieux :</strong></p>
-                <div className="signature-section">
-                  <p><strong>Départ :</strong></p>
-                  <p>Cherkaoui Auto Rent : __________________</p>
-                  <p>Locataire : __________________</p>
-                </div>
-                <div className="signature-section">
-                  <p><strong>Retour :</strong></p>
-                  <p>Cherkaoui Auto Rent : __________________</p>
-                  <p>Locataire : __________________</p>
-                </div>
-              </div>
+              <p><i>je soussigné <strong><i>{formData.locataireNomPrenom}</i></strong> déclare avoir pris connaissance des conditions 
+générales figurant dans le contrat de location de voiture, que j'accepte sans réserve.</i>
+</p>
+            <p>  <strong>Lieu :</strong> {formData.lieuPrise || "________________"}<br />
+              <strong>Date :</strong> {formData.dateDebut || "________________"}
+        </p>
+          </div>
+          <div className="locataire-section" >
+            <div> 
+              {/* <img src={cache} alt="cache" /> */}
             </div>
           </div>
         </div>
 
-        <div className="contract-footer">
-          <p><em>Contrat établi en deux exemplaires originaux, chaque partie reconnaissant avoir reçu le sien.</em></p>
-          <p><strong>CHERKAOUI AUTO RENT</strong> - Tél : +212 74 72 74 79 / +212 6 45 84 86 86 </p>
+        {/* <div className="contract-footer">
+          <p><em><strong>CHERKAOUI AUTO RENT SARL</strong></em></p>
+          <p>ICE: 003765030000093 - TP: 41201401 - RC: 709/BOUJAAD</p>
+          <p><strong>Adresse: </strong>N° 97 LOT ENNAKHIL BEJAAD | <strong> Email: </strong> Cherkaoui.autorent@gmail.com | <strong>Tél :</strong> +212 74 72 74 79 / +212 6 45 84 86 86 </p>
+        </div> */}
+
+        <div className="contract-container">
+      <h1 className="contract-title">
+        Conditions Générales du Contrat
+      </h1>
+      <div className="contract-grid">
+        {/* Colonne gauche */}
+        <div className="contract-column">
+          {leftColumn.map((article) => (
+            <div key={article.numero} className="article-item">
+              <h2 className="article-title">
+                Article {article.numero} : {article.titre}
+              </h2>
+              <p className="article-content">{article.contenu}</p>
+              <p className="article-arabic">{article.arabe}</p>
+            </div>
+          ))}
+        </div>
+        {/* Colonne droite */}
+        <div className="contract-column">
+          {rightColumn.map((article) => (
+            <div key={article.numero} className="article-item">
+              <h2 className="article-title">
+                Article {article.numero} : {article.titre}
+              </h2>
+              <p className="article-content">{article.contenu}</p>
+              <p className="article-arabic">{article.arabe}</p>
+            </div>
+          ))}
         </div>
       </div>
+      {/* Déclaration et signature */}
+      {/* <div className="signature-section">
+        <p>
+          Je déclare avoir pris connaissance des conditions générales figurant
+          dans le contrat de location de voiture, que j&apos;accepte sans réserve.
+        </p>
+        <p className="signature-line">— Signature du Locataire</p>
+      </div> */}
+        <div className="locataire-section-sign" >
+              <p><i>je soussigné <strong><i>{formData.locataireNomPrenom}</i></strong> déclare avoir pris connaissance des conditions 
+générales figurant dans le contrat de location de voiture, que j'accepte sans réserve.</i>
+</p>
+              <strong>Lieu :</strong> {formData.lieuPrise || "________________"}<br />
+              <strong>Date :</strong> {formData.dateDebut || "________________"}
+        </div>
+    
+        </div>
 
-      {/* Section du formulaire */}
-     
+      </div>
+    
+
     </div>
   );
 };
