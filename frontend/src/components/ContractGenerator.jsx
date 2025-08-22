@@ -195,11 +195,20 @@ const contractArticles = [
     contenu:
       "Le locataire reconnaît que tout montant dû inscrit dans le contrat constitue une dette certaine, liquide et exigible.",
     arabe:
-      "يُقر المكتري بأن كل مبلغ وارد في العقد هو دين ثابت، واجب الأداء."
+      " يُقر المكتري بأن كل مبلغ وارد في العقد هو دين ثابت، واجب الأداء."
+  },
+  {
+    numero:25,
+    contenu:" Le locataire est le seul responsable de délits contraventions de la circulation routière.",
+    arabe:"المستأجر هو المسؤول الوحيد عن المخالفات المرورية"
+
   }
 ];
  const leftColumn = contractArticles.slice(0,10);
-  const rightColumn = contractArticles.slice(10, 24);
+const rightColumn = contractArticles.slice(10, 24);
+
+const lastArticle = contractArticles[contractArticles.length - 1];
+
 const ContractGenerator = () => {
   const [formData, setFormData] = useState({
     // Données du loueur
@@ -738,17 +747,16 @@ const ContractGenerator = () => {
             <p>
               <strong>
                 <i>
-                  * Le locataire est le seul responsable de délits
-                  contraventions de la circulation routière.
+                  *{lastArticle.contenu}
                   <br />
                 </i>
-                <span
-                  style={{
-                    direction: "rtl",
-                    fontFamily: "Noto Naskh Arabic, serif",
-                  }}
-                >
-                  .المستأجر هو المسؤول الوحيد عن المخالفات المرورية*
+                <span style={{
+          fontFamily: 'Tahoma, Arial, sans-serif',
+          direction: 'rtl',
+          textAlign: 'center'
+        }}
+                 >
+                  {lastArticle.arabe}*
                 </span>
               </strong>
             </p>

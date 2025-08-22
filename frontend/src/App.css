@@ -692,10 +692,10 @@ width: 150px;
 
 /* Titre de l'article */
 .article-title {
-  font-weight: 300;
+  font-weight: 500;
   color: #374151;
   margin-bottom: 8px;
-  font-size: 6px;
+  font-size: 7px;
 }
 
 /* Contenu de l'article */
