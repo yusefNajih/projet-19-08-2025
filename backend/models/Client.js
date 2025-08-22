@@ -98,12 +98,12 @@ const clientSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Index for efficient queries
-clientSchema.index({ email: 1 });
-clientSchema.index({ nationalId: 1 });
-clientSchema.index({ licenseNumber: 1 });
-clientSchema.index({ status: 1 });
-clientSchema.index({ firstName: 1, lastName: 1 });
+// // Index for efficient queries
+// clientSchema.index({ email: 1 });
+// clientSchema.index({ nationalId: 1 });
+// clientSchema.index({ licenseNumber: 1 });
+// clientSchema.index({ status: 1 });
+// clientSchema.index({ firstName: 1, lastName: 1 });
 
 // Virtual for full name
 clientSchema.virtual('fullName').get(function() {

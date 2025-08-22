@@ -127,11 +127,11 @@ const reservationSchema = new mongoose.Schema({
 });
 
 // Index for efficient queries
-reservationSchema.index({ reservationNumber: 1 });
-reservationSchema.index({ client: 1 });
-reservationSchema.index({ vehicle: 1 });
-reservationSchema.index({ status: 1 });
-reservationSchema.index({ startDate: 1, endDate: 1 });
+// reservationSchema.index({ reservationNumber: 1 });
+// reservationSchema.index({ client: 1 });
+// reservationSchema.index({ vehicle: 1 });
+// reservationSchema.index({ status: 1 });
+// reservationSchema.index({ startDate: 1, endDate: 1 });
 
 // Pre-save middleware to generate reservation number
 reservationSchema.pre('validate', async function(next) {
