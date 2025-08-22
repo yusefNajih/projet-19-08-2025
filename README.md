@@ -758,7 +758,7 @@ DEBUG=autorent:*
 Ce projet est sous licence MIT. Voir le fichier `LICENSE` pour plus de détails.
 
 ### **Crédits**
-- **Développé par** : Manus AI
+- **Développé par** : Haytam Raba & Youssef Najih
 - **Conçu pour** : AutoRent Cherkaoui
 - **Technologies** : React.js, Node.js, MongoDB, Tailwind CSS
 - **Icônes** : Lucide React
