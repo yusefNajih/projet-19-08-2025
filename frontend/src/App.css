@@ -168,15 +168,15 @@
 
 .contract-header {
   text-align: center;
-  margin-bottom: 30px;
-  border-bottom: 2px solid #333;
-  padding-bottom: 20px;
+  margin-bottom: 1px;
+  border-bottom: 1.8px dotted #312f2f;
+  padding-bottom: 4px;
 }
 
 .contract-header h1 {
   font-size: 24px;
   font-weight: bold;
-  margin: 0 0 10px 0;
+  margin: 0;
   color: #2c3e50;
 }
 
@@ -188,12 +188,12 @@
 }
 
 .contract-section {
-  margin-bottom: 25px;
+  margin: 0;
   page-break-inside: avoid;
 }
 
 .contract-section h3 {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: bold;
   margin: 0 0 15px 0;
   color: #2c3e50;
@@ -202,7 +202,7 @@
 }
 
 .contract-section h4 {
-  font-size: 12px;
+  font-size: 10px;
   font-weight: bold;
   margin: 15px 0 10px 0;
   color: #34495e;
@@ -219,14 +219,15 @@
 }
 
 .contract-section li {
-  margin: 5px 0;
+  margin: 3px 0;
 }
 
 .party-section, .vehicle-section {
-  margin: 15px 0;
+  margin: 5px 0;
   padding: 15px;
   background-color: #f8f9fa;
-  border-left: 4px solid #3498db;
+  border: 2px solid #07253a;
+  border-radius: 4px;
 }
 
 .party-section h4, .vehicle-section h4 {
@@ -240,7 +241,7 @@
 }
 
 .party-section li, .vehicle-section li {
-  margin: 8px 0;
+  margin: 5px 0;
   padding: 5px 0;
   border-bottom: 1px dotted #bdc3c7;
 }
@@ -576,13 +577,73 @@
 }
 .form-group.half-width input {
   width: 100%;       /* take full width */
-  height: 100%;      /* optional: take full height */
+  height: 100%;      
   box-sizing: border-box; /* include padding/border in width/height */
 }
-
+/* .contract-header h1,.contract-header h1{
+   margin-top: 0.5rem;
+  margin: 0;
+  padding-top:0px;
+  padding-bottom: 0;
+} */
+.LOGO{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  padding-top:0px;
+  padding-bottom: 0;
+}
+.LOGO img {
+  width: 100px;
+  height: auto;
+  display: block;
+  margin: 0;
+}
 /* @media (max-width: 768px) {
   .form-row-double {
     flex-direction: column;
     gap: 20px;
   }
 } */
+ .locataire {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+ }
+ .party-section{
+  width: 100%;
+ }
+ .party-section-loi p{
+  text-align: center;
+ }
+.party-section-loi {
+   margin: 3px 0;
+  padding: 8px;
+  background-color: #f8f9fa;
+  border: 2px solid #07253a;
+  border-radius: 4px;
+ }
+.signature-section{ 
+  display: flex;
+justify-content: space-between;
+ margin-top: 0;
+ }
+ .locataire-section{
+   width: 45%;
+  border:1px dashed black;
+  padding: 8px;
+  border-radius: 4px;
+ }
+  .locataire-section p{
+   font-size: 8px; 
+  }
+.locataire-section img{
+width: 150px;
+  height: auto;
+  display: block;
+  margin: 0;
+}
+   
