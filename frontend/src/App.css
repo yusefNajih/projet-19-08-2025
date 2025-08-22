@@ -637,7 +637,7 @@ justify-content: space-between;
   padding: 8px;
   border-radius: 4px;
  }
-  .locataire-section p{
+  .locataire-section p, .locataire-section-sign p{
    font-size: 8px; 
   }
 .locataire-section img{
@@ -646,4 +646,109 @@ width: 150px;
   display: block;
   margin: 0;
 }
-   
+/* articles */
+/* Conteneur principal */
+.contract-container {
+  padding: 24px;
+  border-radius: 16px;
+  max-width: 100%;
+}
+
+/* Titre principal */
+.contract-title {
+  font-size: 15px;
+  font-weight: bold;
+  margin-bottom: 14px;
+  text-align: center;
+  color: #1f2937;
+}
+
+/* Grille pour les deux colonnes */
+.contract-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 22px;
+  font-size: 0.8rem; /* Taille de police réduite */
+}
+
+/* Style pour chaque colonne */
+.contract-column {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Séparateur entre les articles */
+.article-item {
+  /* border-bottom: 1px solid #e5e7eb; */
+  padding-bottom: 2px;
+  margin-bottom: 4px;
+}
+
+.article-item:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+/* Titre de l'article */
+.article-title {
+  font-weight: 300;
+  color: #374151;
+  margin-bottom: 8px;
+  font-size: 6px;
+}
+
+/* Contenu de l'article */
+.article-content {
+  text-align: justify;
+  color: #4b5563;
+  line-height: 1.5;
+  margin-bottom: 1px;
+  font-size: 7px;
+}
+
+/* Texte arabe */
+.article-arabic {
+  text-align: right;
+  font-family: 'Tahoma', Arial, sans-serif;
+  margin-top: 3px;
+  color: #4b5563;
+  font-size: 7px;
+}
+
+/* Section de signature */
+.signature-section {
+  margin-top: 32px;
+  text-align: center;
+  color: #6b7280;
+  font-size: 0.75rem;
+  font-style: italic;
+  grid-column: span 2;
+}
+
+.signature-line {
+  margin-top: 12px;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .contract-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  
+  .contract-container {
+    padding: 16px;
+  }
+  
+  .contract-title {
+    font-size: 1.25rem;
+  }
+}
+.locataire-section-sign{
+  width: 49%;
+  height: 80px;
+  border:1px dashed black;
+  padding: 10px;
+  border-radius: 6px;
+}

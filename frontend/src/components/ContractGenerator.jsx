@@ -2,7 +2,204 @@ import React, { useState } from "react";
 import logo from "../assets/logo.png";
 import cache from "../assets/cache.png"
 // import html2pdf from "html2pdf.js";
-
+// src/data/contractArticles.js
+//les articles de contracts
+const contractArticles = [
+  {
+    numero: 1,
+    titre: "IDENTIFICATION DES PARTIES",
+    contenu:
+      "Le présent contrat est conclu entre l’agence de location de voiture, représentée légalement selon les mentions figurant en page de couverture, ci-après dénommée la société Cherkaoui Auto Rent, et le locataire défini en page 1 du contrat.",
+    arabe:
+      "أُبرِم هذا العقد بين وكالة كراء السيارات، الممثلة قانونيًا حسب المعطيات الواردة في صفحة الغلاف، المشار إليها فيما بعد بـ\"الشركة\"، والطرف الثاني المكتري المحدد في الصفحة الأولى من العقد."
+  },
+  {
+    numero: 2,
+    titre: "ÉTAT DU VÉHICULE",
+    contenu:
+      "Le véhicule est livré au locataire en parfait état apparent, propre et fonctionnel. Un état des lieux contradictoire est établi à la remise et au retour du véhicule. Toute anomalie non signalée lors de la remise engage la responsabilité du locataire.",
+    arabe:
+      "تُسلَّم السيارة إلى المكتري وهي في حالة ميكانيكية سليمة، نظيفة، وجاهزة للاستعمال. يتم تحرير محضر معاينة عند التسليم والإرجاع. كل ضرر لم يُذكر عند التسليم يتحمله المكتري."
+  },
+  {
+    numero: 3,
+    titre: "ENTRETIEN ET UTILISATION",
+    contenu:
+      "L’entretien courant (vidange, batterie, pneus, liquide de frein) est pris en charge par la société. Tout dommage résultant d’une mauvaise utilisation, surcharge, négligence, ou usage contraire aux règles est à la charge du locataire.",
+    arabe:
+      "تتحمل الشركة صيانة السيارة الاعتيادية (الزيت، البطارية، العجلات، سائل الفرامل). أما الأعطاب الناتجة عن سوء الاستعمال أو الإهمال فهي من مسؤولية المكتري بالكامل."
+  },
+  {
+    numero: 4,
+    titre: "DESTINATION DU VÉHICULE",
+    contenu:
+      "Le véhicule est exclusivement destiné à un usage personnel et privé. Il est strictement interdit de l’utiliser pour le transport public, InDrive, Uber, taxi ou usage commercial sans autorisation écrite.",
+    arabe:
+      "السيارة مخصصة للاستعمال الشخصي فقط. يُمنع منعًا باتًا استخدامها في النقل العمومي أو تطبيقات النقل المأجور مثل إن درايف أو أوبر أو كطاكسي، أو لأغراض مهنية أو تجارية دون إذن مكتوب."
+  },
+  {
+    numero: 5,
+    titre: "ASSURANCE ET FRANCHISE",
+    contenu:
+      "Le véhicule est assuré en responsabilité civile. En cas d’accident, le locataire prend à sa charge la franchise obligatoire, les frais non couverts par l’assurance (TVA, vétusté, immobilisation), ainsi que tous frais annexes.",
+    arabe:
+      "السيارة مؤمنة ضد المسؤولية المدنية فقط. في حالة وقوع حادث، يتحمل المكتري: مبلغ الفرنشيز المحدد من طرف الشركة، التكاليف غير المغطاة من طرف التأمين، وكل المصاريف الإضافية."
+  },
+  {
+    numero: 6,
+    titre: "MODALITÉS DE PAIEMENT",
+    contenu:
+      "La location est payable d’avance. En cas d’accident, prolongation ou dommage, les montants dus sont calculés et exigibles immédiatement. Tout chèque sans provision fait l’objet d’une plainte au titre de l’article 543 du Code pénal.",
+    arabe:
+      "يُدفع مبلغ الكراء مسبقًا. في حالة الحادث أو التمديد أو الأضرار، يُحسب المبلغ المستحق ويصبح واجب الأداء فوراً. الشيك بدون رصيد يُتابَع بموجب الفصل 543 من القانون الجنائي."
+  },
+  {
+    numero: 7,
+    titre: "DOMMAGES ET IMMOBILISATION",
+    contenu:
+      "Le locataire est responsable de tout dommage, y compris réparations, remorquage, pièces, main-d’œuvre, et les jours d’immobilisation au tarif journalier.",
+    arabe:
+      "المكتري مسؤول عن كل ضرر يلحق بالسيارة، بما في ذلك مصاريف الإصلاح، القطر، قطع الغيار، اليد العاملة، وأيام توقف السيارة حسب الثمن اليومي للكراء."
+  },
+  {
+    numero: 8,
+    titre: "DOCUMENTS DU VÉHICULE",
+    contenu:
+      "Le locataire est tenu de restituer tous les documents (assurance, carte grise, vignette, PV, etc.). En cas de perte ou non-restitution, des pénalités forfaitaires sont appliquées.",
+    arabe:
+      "يجب على المكتري إرجاع جميع الوثائق (التأمين، البطاقة الرمادية، الضريبة، المعاينة...). في حال ضياعها أو عدم إرجاعها، تُطبق غرامات جزافية بالإضافة إلى مصاريف إعادة الإصدار."
+  },
+  {
+    numero: 9,
+    titre: "INFRACTIONS",
+    contenu:
+      "Le locataire est seul responsable des infractions routières, amendes, saisies ou poursuites judiciaires durant la période de location.",
+    arabe:
+      "المكتري هو المسؤول الوحيد عن المخالفات الطرقية، الغرامات، الحجز أو المتابعات القانونية أثناء فترة الكراء."
+  },
+  {
+    numero: 10,
+    titre: "INFRACTIONS PÉNALES",
+    contenu:
+      "Tout acte de falsification, fausse déclaration, chèque sans provision ou usage frauduleux du véhicule constitue un crime puni par le Code pénal (Art. 540, 543, 607-1, 361 à 367).",
+    arabe:
+      "كل تزوير في الوثائق، تصريح كاذب، شيك بدون رصيد أو استعمال احتيالي للسيارة يُعد جريمة تُعاقب عليها الفصول: الفصل 540 (النصب)، الفصل 543 (الشيك بدون رصيد)، الفصل 1-607 (الاختلاس وسوء الاستعمال)، الفصول 361 إلى 367 (التزوير واستعماله)."
+  },
+  {
+    numero: 11,
+    titre: "RÉSILIATION ANTICIPÉE",
+    contenu:
+      "La société se réserve le droit de résilier unilatéralement le contrat à tout moment en cas de manquement grave (non-paiement, fausse déclaration, usage interdit).",
+    arabe:
+      "تحتفظ الشركة بحق فسخ العقد من جانب واحد في أي وقت في حالة ارتكاب المكتري إخلال جسيم."
+  },
+  {
+    numero: 12,
+    titre: "TRIBUNAL COMPÉTENT",
+    contenu:
+      "En cas de litige, le tribunal du ressort territorial du siège social de la société est seul compétent.",
+    arabe:
+      "في حالة النزاع، تكون المحكمة التابعة لمقر الشركة هي الوحيدة المختصة."
+  },
+  {
+    numero: 13,
+    titre: "INTERDICTIONS ABSOLUES",
+    contenu:
+      "Il est strictement interdit de transporter des substances illicites, participer à des courses ou modifier le véhicule.",
+    arabe:
+      "يُمنع منعًا باتًا نقل مواد ممنوعة، المشاركة في سباقات، أو تعديل أي جزء من السيارة."
+  },
+  {
+    numero: 14,
+    titre: "DÉPÔT DE GARANTIE",
+    contenu:
+      "Un dépôt est exigé à la signature. Il peut être conservé en cas de dommage, retard ou litige.",
+    arabe:
+      "يُؤدى مبلغ الضمان عند توقيع العقد ويُحتفظ به في حال وجود أضرار أو تأخير أو نزاع."
+  },
+  {
+    numero: 15,
+    titre: "DÉCLARATION MENSONGÈRE",
+    contenu:
+      "Toute fausse déclaration engage la responsabilité pénale du locataire.",
+    arabe:
+      "كل تصريح كاذب أمام المحكمة أو الشرطة أو الدرك يعرض المكتري للمتابعة القضائية."
+  },
+  {
+    numero: 16,
+    titre: "CLAUSE PÉNALE",
+    contenu:
+      "Tout manquement grave engage une pénalité forfaitaire immédiate de 50 000 MAD.",
+    arabe:
+      "أي إخلال جسيم يلزم المكتري بغرامة فورية قدرها 50.000 درهم."
+  },
+  {
+    numero: 17,
+    titre: "NON-RESTITUTION",
+    contenu:
+      "Tout retard de restitution est considéré comme un détournement et signalé aux autorités compétentes (Art. 607-1 CP).",
+    arabe:
+      "كل تأخير في إرجاع السيارة يُعتبر اختلاسًا ويتم التبليغ عنه فورًا كمحاولة سرقة."
+  },
+  {
+    numero: 18,
+    titre: "GPS ET SÉCURITÉ",
+    contenu:
+      "Toute tentative de désactivation ou sabotage du GPS constitue un acte de sabotage puni par le Code pénal.",
+    arabe:
+      "كل محاولة لتعطيل أو إزالة جهاز التتبع تُعد جريمة تخريب."
+  },
+  {
+    numero: 19,
+    titre: "REPRISE FORCÉE",
+    contenu:
+      "En cas d’abus ou fraude, la société Cherkaoui Auto Rent pourra reprendre le véhicule à tout moment, avec intervention des autorités si nécessaire.",
+    arabe:
+      "في حالة الاستعمال غير المشروع أو النصب، يمكن للشركة استرجاع السيارة في أي وقت ولو بمساعدة السلطات."
+  },
+  {
+    numero: 20,
+    titre: "COMPARUTION",
+    contenu:
+      "Le locataire s’engage à comparaître à toute convocation judiciaire.",
+    arabe:
+      "يتعهد المكتري بالمثول أمام القضاء عند الاستدعاء."
+  },
+  {
+    numero: 21,
+    titre: "RESPONSABILITÉ TOTALE",
+    contenu:
+      "Le véhicule est loué sous assurance responsabilité civile uniquement. En cas d’accident ou panne, le locataire supporte les réparations, remorquage, et retour du véhicule.",
+    arabe:
+      "السيارة مكراة بتأمين المسؤولية المدنية فقط. عند وقوع حادث أو عطب، يتحمل المكتري الإصلاح والقطر وإرجاع السيارة إلى مقر الشركة."
+  },
+  {
+    numero: 22,
+    titre: "INTERDICTION DE SORTIE DU TERRITOIRE",
+    contenu:
+      "Le véhicule ne peut franchir les frontières du Maroc sans autorisation écrite. Tout franchissement est constitutif de crime douanier.",
+    arabe:
+      "يُمنع مغادرة التراب الوطني بالسيارة بدون ترخيص مكتوب من الشركة."
+  },
+  {
+    numero: 23,
+    titre: "DÉFAUT DE PAIEMENT",
+    contenu:
+      "Tout défaut ou refus de paiement est considéré comme escroquerie au sens de l’article 540 du Code pénal.",
+    arabe:
+      "كل امتناع عن الأداء يُعد نصبًا طبقًا للفصل 540 من القانون الجنائي."
+  },
+  {
+    numero: 24,
+    titre: "RECONNAISSANCE DE DETTE",
+    contenu:
+      "Le locataire reconnaît que tout montant dû inscrit dans le contrat constitue une dette certaine, liquide et exigible.",
+    arabe:
+      "يُقر المكتري بأن كل مبلغ وارد في العقد هو دين ثابت، واجب الأداء."
+  }
+];
+ const leftColumn = contractArticles.slice(0,10);
+  const rightColumn = contractArticles.slice(10, 24);
 const ContractGenerator = () => {
   const [formData, setFormData] = useState({
     // Données du loueur
@@ -380,9 +577,7 @@ const ContractGenerator = () => {
           </div>
         </form>
       </div>
-
       <hr className="separtor" />
-
       <div className="contract-preview" id="contract-content">
         <div className="contract-header">
           <h1>
@@ -583,9 +778,62 @@ const ContractGenerator = () => {
           </div>
 
         </div>
+        <div className="contract-container">
+      <h1 className="contract-title">
+        Conditions Générales du Contrat
+      </h1>
+      <div className="contract-grid">
+        {/* Colonne gauche */}
+        <div className="contract-column">
+          {leftColumn.map((article) => (
+            <div key={article.numero} className="article-item">
+              <h2 className="article-title">
+                Article {article.numero} : {article.titre}
+              </h2>
+              <p className="article-content">{article.contenu}</p>
+              <p className="article-arabic">{article.arabe}</p>
+            </div>
+          ))}
+        </div>
+        {/* Colonne droite */}
+        <div className="contract-column">
+          {rightColumn.map((article) => (
+            <div key={article.numero} className="article-item">
+              <h2 className="article-title">
+                Article {article.numero} : {article.titre}
+              </h2>
+              <p className="article-content">{article.contenu}</p>
+              <p className="article-arabic">{article.arabe}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+      {/* Déclaration et signature */}
+      {/* <div className="signature-section">
+        <p>
+          Je déclare avoir pris connaissance des conditions générales figurant
+          dans le contrat de location de voiture, que j&apos;accepte sans réserve.
+        </p>
+        <p className="signature-line">— Signature du Locataire</p>
+      </div> */}
+        <div className="locataire-section-sign" >
+            <div> 
+              <p><i>je soussigné <strong><i>{formData.locataireNomPrenom}</i></strong> déclare avoir pris connaissance des conditions 
+générales figurant dans le contrat de location de voiture, que j'accepte sans réserve.</i></p>
+         
+              <strong>Lieu :</strong> {formData.lieuPrise || "________________"}<br />
+              <strong>Date :</strong> {formData.dateDebut || "________________"}
+              </div>
+            
+           
+            
+          </div>
 
+    </div>
 
       </div>
+    
+
     </div>
   );
 };
