@@ -31,7 +31,6 @@ const Layout = ({ children, currentPage, onPageChange, user, onLogout }) => {
     ...(user && user.role === 'admin' ? [
       { id: 'vehicle-admin', icon: FileText, label: t('Suivi administratif') }
     ] : []),
-    { id: 'billing', icon: Receipt, label: t('billing') },
     { id: 'contracts', icon: FileText, label: t('contracts') },
     { id: 'maintenance', icon: Wrench, label: t('maintenance') },
     { id: 'reports', icon: BarChart3, label: t('reports') },

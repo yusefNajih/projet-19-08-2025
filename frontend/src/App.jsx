@@ -7,7 +7,7 @@ import VehicleManagement from "./components/VehicleManagement";
 import VehicleAdminTable from "./components/VehicleAdminTable";
 import ClientManagement from "./components/ClientManagement";
 import ReservationManagement from "./components/ReservationManagement";
-import Facture from "./components/Facturation";
+import Reports from "./components/Reports";
 import ContractGenerator from "./components/ContractGenerator";
 import Settings from "./components/Settings";
 import "./i18n";
@@ -73,14 +73,12 @@ function App() {
             triggerVehicleRefresh={triggerVehicleRefresh}
           />
         );
-      case "billing":
-        return <Facture />;
       case "contracts":
         return <ContractGenerator />;
       case "maintenance":
         return <div>Maintenance (à implémenter)</div>;
       case "reports":
-        return <div>Rapports (à implémenter)</div>;
+        return <Reports/>;
       case "settings":
         return <Settings />;
       default:
