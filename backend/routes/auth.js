@@ -156,6 +156,75 @@ router.get('/me', auth, async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
+// @route   PUT /api/auth/profile
+// @desc    Update user profile (username, email)
+// @access  Private
+router.put('/profile', auth, [
+  body('username').isLength({ min: 3 }).trim().withMessage('Username must be at least 3 characters'),
+  body('email').isEmail().normalizeEmail().withMessage('Please enter a valid email'),
+  body('currentPassword').notEmpty().withMessage('Current password is required')
+], async (req, res) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { username, email, currentPassword } = req.body;
+    const userId = req.user._id;
+    
+    // Récupérer l'utilisateur actuel avec le mot de passe
+    const currentUser = await User.findById(userId);
+    if (!currentUser) {
+      return res.status(404).json({ message: "Utilisateur non trouvé" });
+    }
+    
+    // Vérifier le mot de passe actuel
+    const isMatch = await currentUser.comparePassword(currentPassword);
+    if (!isMatch) {
+      return res.status(400).json({ message: "Mot de passe actuel incorrect" });
+    }
+    
+    // Vérifier l'unicité de l'email si changé
+    if (email !== currentUser.email) {
+      const emailExists = await User.findOne({ email, _id: { $ne: userId } });
+      if (emailExists) {
+        return res.status(400).json({ message: "Cet email est déjà utilisé" });
+      }
+    }
+    
+    // Vérifier l'unicité du username si changé
+    if (username !== currentUser.username) {
+      const usernameExists = await User.findOne({ username, _id: { $ne: userId } });
+      if (usernameExists) {
+        return res.status(400).json({ message: "Ce nom d'utilisateur est déjà utilisé" });
+      }
+    }
+    
+    // Mise à jour
+    currentUser.username = username;
+    currentUser.email = email;
+    await currentUser.save();
+    
+    res.json({ 
+      message: "Profil mis à jour avec succès",
+      user: {
+        id: currentUser._id,
+        username: currentUser.username,
+        email: currentUser.email,
+        firstName: currentUser.firstName,
+        lastName: currentUser.lastName,
+        role: currentUser.role,
+        preferences: currentUser.preferences,
+        lastLogin: currentUser.lastLogin
+      }
+    });
+    
+  } catch (error) {
+    console.error('Update profile error:', error);
+    res.status(500).json({ message: "Erreur serveur lors de la mise à jour" });
+  }
+});
 
 // @route   PUT /api/auth/preferences
 // @desc    Update user preferences

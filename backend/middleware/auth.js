@@ -46,7 +46,7 @@ const authorize = (...roles) => {
   };
 };
 
-// Optional auth - doesn't fail if no token
+// auth - doesn't fail if no token
 const optionalAuth = async (req, res, next) => {
   try {
     const token = req.header('Authorization')?.replace('Bearer ', '');
