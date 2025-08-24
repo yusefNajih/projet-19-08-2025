@@ -48,6 +48,7 @@ app.use('/api/contracts', require('./routes/contracts'));
 app.use('/api/maintenance', require('./routes/maintenance'));
 app.use('/api/dashboard', require('./routes/dashboard'));
 app.use('/api/invoice', require('./routes/invoice'));
+app.use('/api/vehicleAdmin', require('./routes/vehicleAdmin'));
 
 // --- Health check ---
 app.get('/api/health', (req, res) => {

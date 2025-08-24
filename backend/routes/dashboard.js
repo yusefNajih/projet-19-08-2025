@@ -51,7 +51,7 @@ router.get('/stats', auth, async (req, res) => {
     // Get total revenue from completed reservations
     const revenueStats = await Reservation.aggregate([
       {
-        $match: { status: 'completed' }
+        $match: { status: { $in: ['active', 'completed'] } }
       },
       {
         $group: {

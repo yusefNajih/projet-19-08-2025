@@ -1,5 +1,3 @@
-
-
 const express = require('express');
 const { body, validationResult, query } = require('express-validator');
 const Vehicle = require('../models/Vehicle');
@@ -101,128 +99,15 @@ router.get('/', auth, [
   }
 });
 
-// @route   GET /api/vehicles/admin-status
-// @desc    Get administrative status for all vehicles (for admin dashboard)
-// @access  Private (Admin only)
-router.get('/admin-status', [auth, authorize('admin')], async (req, res) => {
-  try {
-    // Log pour debug
-    console.log('ADMIN-STATUS DEBUG:', {
-      user: req.user,
-      headers: req.headers,
-      query: req.query
-    });
-
-    const vehicles = await Vehicle.find();
-    const now = new Date();
-    const soon = new Date();
-    soon.setDate(now.getDate() + 30); // 30 jours d'alerte
-
-    const result = vehicles.map(v => {
-      // Assurance
-      let insuranceStatus = 'Non renseignée';
-      let insuranceAlert = '';
-      if (v.documents?.insurance) {
-        if (!v.documents.insurance.expiryDate) {
-          insuranceStatus = 'Non renseignée';
-        } else if (v.documents.insurance.expiryDate < now) {
-          insuranceStatus = 'Expirée';
-          insuranceAlert = '🚨 Assurance expirée';
-        } else if (v.documents.insurance.expiryDate < soon) {
-          insuranceStatus = 'Bientôt expirée';
-          insuranceAlert = '⚠️ Assurance bientôt expirée';
-        } else {
-          insuranceStatus = 'Valide';
-        }
-      }
-
-      // Vignette
-      let vignetteStatus = 'Non renseignée';
-      let vignetteAlert = '';
-      if (v.documents?.registration) {
-        if (!v.documents.registration.expiryDate) {
-          vignetteStatus = 'Non renseignée';
-        } else if (v.documents.registration.expiryDate < now) {
-          vignetteStatus = 'Expirée';
-          vignetteAlert = '🚨 Vignette expirée';
-        } else if (v.documents.registration.expiryDate < soon) {
-          vignetteStatus = 'Bientôt expirée';
-          vignetteAlert = '⚠️ Vignette bientôt expirée';
-        } else {
-          vignetteStatus = 'Valide';
-        }
-      }
-
-      // Visite technique
-      let inspectionStatus = 'Non renseignée';
-      let inspectionAlert = '';
-      if (v.documents?.inspection) {
-        if (!v.documents.inspection.expiryDate) {
-          inspectionStatus = 'Non renseignée';
-        } else if (v.documents.inspection.expiryDate < now) {
-          inspectionStatus = 'Expirée';
-          inspectionAlert = '🚨 Visite technique expirée';
-        } else if (v.documents.inspection.expiryDate < soon) {
-          inspectionStatus = 'Bientôt expirée';
-          inspectionAlert = '⚠️ Visite technique bientôt expirée';
-        } else {
-          inspectionStatus = 'Valide';
-        }
-      }
-
-      // Statut administratif global
-      let adminStatus = '🟢 Conforme';
-      let adminAlert = '✅ Aucun problème';
-      if ([insuranceStatus, vignetteStatus, inspectionStatus].includes('Expirée')) {
-        adminStatus = '🔴 Non conforme';
-        adminAlert = '🚨 Document expiré';
-      } else if ([insuranceStatus, vignetteStatus, inspectionStatus].includes('Bientôt expirée')) {
-        adminStatus = '🟡 À régulariser';
-        adminAlert = '⚠️ Document bientôt expiré';
-      }
-
-      return {
-        id: v._id,
-        vehicle: `${v.brand} ${v.model} ${v.year} – ${v.licensePlate}`,
-        insurance: {
-          company: v.documents?.insurance?.originalName || '',
-          expiryDate: v.documents?.insurance?.expiryDate,
-          status: insuranceStatus,
-          alert: insuranceAlert
-        },
-        vignette: {
-          expiryDate: v.documents?.registration?.expiryDate,
-          status: vignetteStatus,
-          alert: vignetteAlert
-        },
-        inspection: {
-          expiryDate: v.documents?.inspection?.expiryDate,
-          status: inspectionStatus,
-          alert: inspectionAlert
-        },
-        fuelType: v.fuelType,
-        adminStatus,
-        adminAlert
-      };
-    });
-    res.json(result);
-  } catch (error) {
-    console.error('Admin status vehicles error:', error);
-    res.status(500).json({ message: 'Server error' });
-  }
-});
-
 // @route   GET /api/vehicles/:id
 // @desc    Get vehicle by ID
 // @access  Private
 router.get('/:id', auth, async (req, res) => {
   try {
     const vehicle = await Vehicle.findById(req.params.id);
-    
     if (!vehicle) {
       return res.status(404).json({ message: 'Vehicle not found' });
     }
-
     res.json(vehicle);
   } catch (error) {
     console.error('Get vehicle error:', error);
@@ -232,13 +117,15 @@ router.get('/:id', auth, async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
+
+// @route   POST /api/vehicles
 // @desc    Create a new vehicle
 // @access  Private (Manager/Admin only)
 router.post(
   '/',
   auth,
   authorize('admin', 'manager'),
-  upload.single('image'), // <-- pour gérer l'image envoyée
+  upload.single('image'),
   [
     body('brand').notEmpty().trim().withMessage('Brand is required'),
     body('model').notEmpty().trim().withMessage('Model is required'),
@@ -278,7 +165,7 @@ router.post(
         transmission,
         seats,
         notes,
-        image: imagePath // <-- AJOUTE ce champ
+        image: imagePath
       });
 
       await vehicle.save();
@@ -317,7 +204,6 @@ router.put('/:id', [auth, authorize('admin', 'manager')], [
     }
 
     const vehicle = await Vehicle.findById(req.params.id);
-    
     if (!vehicle) {
       return res.status(404).json({ message: 'Vehicle not found' });
     }
@@ -328,7 +214,6 @@ router.put('/:id', [auth, authorize('admin', 'manager')], [
         licensePlate: req.body.licensePlate.toUpperCase(),
         _id: { $ne: req.params.id }
       });
-      
       if (existingVehicle) {
         return res.status(400).json({ 
           message: 'Vehicle with this license plate already exists' 
@@ -366,7 +251,6 @@ router.put('/:id', [auth, authorize('admin', 'manager')], [
 router.delete('/:id', [auth, authorize('admin')], async (req, res) => {
   try {
     const vehicle = await Vehicle.findById(req.params.id);
-    
     if (!vehicle) {
       return res.status(404).json({ message: 'Vehicle not found' });
     }
@@ -456,115 +340,4 @@ router.get('/:id/check-availability', auth, [
 });
 
 module.exports = router;
-
-// @route   GET /api/vehicles/admin-status
-// @desc    Get administrative status for all vehicles (for admin dashboard)
-// @access  Private (Admin only)
-router.get('/admin-status', [auth, authorize('admin')], async (req, res) => {
-  try {
-    // Log pour debug
-    console.log('ADMIN-STATUS DEBUG:', {
-      user: req.user,
-      headers: req.headers,
-      query: req.query
-    });
-
-    const vehicles = await Vehicle.find();
-    const now = new Date();
-    const soon = new Date();
-    soon.setDate(now.getDate() + 30); // 30 jours d'alerte
-
-    const result = vehicles.map(v => {
-      // Assurance
-      let insuranceStatus = 'Non renseignée';
-      let insuranceAlert = '';
-      if (v.documents?.insurance) {
-        if (!v.documents.insurance.expiryDate) {
-          insuranceStatus = 'Non renseignée';
-        } else if (v.documents.insurance.expiryDate < now) {
-          insuranceStatus = 'Expirée';
-          insuranceAlert = '🚨 Assurance expirée';
-        } else if (v.documents.insurance.expiryDate < soon) {
-          insuranceStatus = 'Bientôt expirée';
-          insuranceAlert = '⚠️ Assurance bientôt expirée';
-        } else {
-          insuranceStatus = 'Valide';
-        }
-      }
-
-      // Vignette
-      let vignetteStatus = 'Non renseignée';
-      let vignetteAlert = '';
-      if (v.documents?.registration) {
-        if (!v.documents.registration.expiryDate) {
-          vignetteStatus = 'Non renseignée';
-        } else if (v.documents.registration.expiryDate < now) {
-          vignetteStatus = 'Expirée';
-          vignetteAlert = '🚨 Vignette expirée';
-        } else if (v.documents.registration.expiryDate < soon) {
-          vignetteStatus = 'Bientôt expirée';
-          vignetteAlert = '⚠️ Vignette bientôt expirée';
-        } else {
-          vignetteStatus = 'Valide';
-        }
-      }
-
-      // Visite technique
-      let inspectionStatus = 'Non renseignée';
-      let inspectionAlert = '';
-      if (v.documents?.inspection) {
-        if (!v.documents.inspection.expiryDate) {
-          inspectionStatus = 'Non renseignée';
-        } else if (v.documents.inspection.expiryDate < now) {
-          inspectionStatus = 'Expirée';
-          inspectionAlert = '🚨 Visite technique expirée';
-        } else if (v.documents.inspection.expiryDate < soon) {
-          inspectionStatus = 'Bientôt expirée';
-          inspectionAlert = '⚠️ Visite technique bientôt expirée';
-        } else {
-          inspectionStatus = 'Valide';
-        }
-      }
-
-      // Statut administratif global
-      let adminStatus = '🟢 Conforme';
-      let adminAlert = '✅ Aucun problème';
-      if ([insuranceStatus, vignetteStatus, inspectionStatus].includes('Expirée')) {
-        adminStatus = '🔴 Non conforme';
-        adminAlert = '🚨 Document expiré';
-      } else if ([insuranceStatus, vignetteStatus, inspectionStatus].includes('Bientôt expirée')) {
-        adminStatus = '🟡 À régulariser';
-        adminAlert = '⚠️ Document bientôt expiré';
-      }
-
-      return {
-        id: v._id,
-        vehicle: `${v.brand} ${v.model} ${v.year} – ${v.licensePlate}`,
-        insurance: {
-          company: v.documents?.insurance?.originalName || '',
-          expiryDate: v.documents?.insurance?.expiryDate,
-          status: insuranceStatus,
-          alert: insuranceAlert
-        },
-        vignette: {
-          expiryDate: v.documents?.registration?.expiryDate,
-          status: vignetteStatus,
-          alert: vignetteAlert
-        },
-        inspection: {
-          expiryDate: v.documents?.inspection?.expiryDate,
-          status: inspectionStatus,
-          alert: inspectionAlert
-        },
-        fuelType: v.fuelType,
-        adminStatus,
-        adminAlert
-      };
-    });
-    res.json(result);
-  } catch (error) {
-    console.error('Admin status vehicles error:', error);
-    res.status(500).json({ message: 'Server error' });
-  }
-});
 
