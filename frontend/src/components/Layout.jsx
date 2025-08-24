@@ -32,7 +32,7 @@ const Layout = ({ children, currentPage, onPageChange, user, onLogout }) => {
       { id: 'vehicle-admin', icon: FileText, label: t('Suivi administratif') }
     ] : []),
     { id: 'contracts', icon: FileText, label: t('contracts') },
-    { id: 'maintenance', icon: Wrench, label: t('maintenance') },
+    // { id: 'maintenance', icon: Wrench, label: t('maintenance') },
     { id: 'reports', icon: BarChart3, label: t('reports') },
     { id: 'settings', icon: Settings, label: t('settings') }
   ];
