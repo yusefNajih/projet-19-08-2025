@@ -32,7 +32,7 @@ const vehicleSchema = new mongoose.Schema({
   dailyPrice: {
     type: Number,
     required: true,
-    min: 0
+    min: 200
   },
   mileage: {
     type: Number,
@@ -60,7 +60,7 @@ const vehicleSchema = new mongoose.Schema({
     max: 50,
     default: 5
   },
-  image: { // <-- Ajoute ce champ
+  image: { 
     type: String
   },
   images: [{

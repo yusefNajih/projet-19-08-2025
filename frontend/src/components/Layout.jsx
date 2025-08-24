@@ -28,7 +28,7 @@ const Layout = ({ children, currentPage, onPageChange, user, onLogout }) => {
     { id: 'clients', icon: Users, label: t('clients') },
     { id: 'reservations', icon: Calendar, label: t('reservations') },
     // Affiche le bouton Suivi administratif seulement pour l'admin
-    ...(user && user.role === 'admin' ? [
+   ...(user && user.role === 'admin' ? [
       { id: 'vehicle-admin', icon: FileText, label: t('Suivi administratif') }
     ] : []),
     { id: 'contracts', icon: FileText, label: t('contracts') },

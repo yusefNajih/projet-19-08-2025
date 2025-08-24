@@ -325,7 +325,7 @@ const Settings = () => {
       </Card>
 
       {/* Section Sécurité */}
-      <Card>
+      {/* <Card>
         <CardHeader>
           <CardTitle>Sécurité</CardTitle>
         </CardHeader>
@@ -354,7 +354,7 @@ const Settings = () => {
             </div>
           </div>
         </CardContent>
-      </Card>
+      </Card> */}
     </div>
   );
 };
