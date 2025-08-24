@@ -99,14 +99,12 @@ export default function VehicleAdminTable() {
     e.preventDefault();
     try {
       if (editMode && selected) {
-        // 1. Mettre à jour les infos générales du véhicule
         await api.put(`/vehicles/${selected.id}`, {
           brand: form.brand,
           model: form.model,
           licensePlate: form.licensePlate,
           fuelType: form.fuelType,
         });
-        // 2. Mettre à jour les documents administratifs
         await api.put(`/vehicleAdmin/${selected.id}/documents`, {
           insurance: {
             company: form.insuranceCompany,
@@ -116,14 +114,12 @@ export default function VehicleAdminTable() {
           inspection: { expiryDate: form.inspectionExpiry },
         });
       } else {
-        // Création véhicule (les documents seront ajoutés après édition)
         await api.post(`/vehicles`, {
           brand: form.brand,
           model: form.model,
           licensePlate: form.licensePlate,
           fuelType: form.fuelType,
         });
-        // Optionnel : recharger la liste pour permettre l’édition immédiate
       }
       setOpenDialog(false);
       resetForm();
@@ -135,8 +131,8 @@ export default function VehicleAdminTable() {
 
   return (
     <div className="p-4">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-bold">{t("Suivi administratif du parc automobile")}</h2>
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold">{t("Suivi administratif du parc automobile")}</h2>
         <Button onClick={openAdd}>{t("Ajouter un véhicule")}</Button>
       </div>
 
@@ -243,80 +239,62 @@ export default function VehicleAdminTable() {
         </Dialog>
       )}
 
-      {/* Tableau de suivi */}
-      <div className="overflow-x-auto">
-        <table className="min-w-full border text-sm">
-          <thead>
-            <tr className="bg-gray-100 dark:bg-gray-800">
-              <th>{t("Marque")}</th>
-              <th>{t("Modèle")}</th>
-              <th>{t("Plaque")}</th>
-              <th>{t("Carburant")}</th>
-              <th>{t("Assurance")}</th>
-              <th>{t("Vignette")}</th>
-              <th>{t("Visite technique")}</th>
-              <th>{t("Statut administratif")}</th>
-              <th>{t("Alertes")}</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading ? (
-              <tr>
-                <td colSpan={10}>{t("Chargement...")}</td>
-              </tr>
-            ) : vehicles.length === 0 ? (
-              <tr>
-                <td colSpan={10}>{t("Aucun véhicule")}</td>
-              </tr>
-            ) : (
-              vehicles.map((v) => (
-                <tr key={v.id} className="border-b">
-                  <td>{v.brand}</td>
-                  <td>{v.model}</td>
-                  <td>{v.licensePlate}</td>
-                  <td>{v.fuelType}</td>
-                  <td>
-                    {v.insurance.company && <div>{v.insurance.company}</div>}
-                    <div>{t("Expire")}: {formatDate(v.insurance.expiryDate)}</div>
-                    {v.insurance.status && <div>{v.insurance.status}</div>}
-                    {v.insurance.alert && (
-                      <Badge color="red">{v.insurance.alert}</Badge>
-                    )}
-                  </td>
-                  <td>
-                    <div>{t("Expire")}: {formatDate(v.vignette.expiryDate)}</div>
-                    {v.vignette.status && <div>{v.vignette.status}</div>}
-                    {v.vignette.alert && (
-                      <Badge color="red">{v.vignette.alert}</Badge>
-                    )}
-                  </td>
-                  <td>
-                    <div>{t("Expire")}: {formatDate(v.inspection.expiryDate)}</div>
-                    {v.inspection.status && <div>{v.inspection.status}</div>}
-                    {v.inspection.alert && (
-                      <Badge color="red">{v.inspection.alert}</Badge>
-                    )}
-                  </td>
-                  <td>
-                    <span
-                      className={`px-2 py-1 rounded ${
-                        statusColors[v.adminStatus] || ""
-                      }`}
-                    >
-                      {v.adminStatus}
-                    </span>
-                  </td>
-                  <td>{v.adminAlert}</td>
-                  <td>
-                    <Button onClick={() => openEdit(v)}>{t("Modifier")}</Button>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
+      {/* Liste en Cards */}
+      {loading ? (
+        <p>{t("Chargement...")}</p>
+      ) : vehicles.length === 0 ? (
+        <p>{t("Aucun véhicule")}</p>
+      ) : (
+        <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
+          {vehicles.map((v) => (
+            <Card key={v.id} className="p-4 shadow-md border rounded-lg">
+              <div className="flex justify-between items-center mb-2">
+                <h3 className="text-lg font-semibold">
+                  {v.brand} {v.model}
+                </h3>
+                <Badge className={statusColors[v.adminStatus] || ""}>
+                  {v.adminStatus}
+                </Badge>
+              </div>
+              <p className="text-sm text-gray-600 mb-2">
+                {t("Plaque")}: <span className="font-medium">{v.licensePlate}</span>
+              </p>
+              <p className="text-sm text-gray-600 mb-4">
+                {t("Carburant")}: <span className="font-medium">{v.fuelType}</span>
+              </p>
+
+              {/* Assurance */}
+              <div className="mb-2">
+                <h4 className="font-medium">{t("Assurance")}</h4>
+                <p>{v.insurance.company}</p>
+                <p>{t("Expire")}: {formatDate(v.insurance.expiryDate)}</p>
+                {v.insurance.alert && <Badge color="red">{v.insurance.alert}</Badge>}
+              </div>
+
+              {/* Vignette */}
+              <div className="mb-2">
+                <h4 className="font-medium">{t("Vignette")}</h4>
+                <p>{t("Expire")}: {formatDate(v.vignette.expiryDate)}</p>
+                {v.vignette.alert && <Badge color="red">{v.vignette.alert}</Badge>}
+              </div>
+
+              {/* Visite technique */}
+              <div className="mb-4">
+                <h4 className="font-medium">{t("Visite technique")}</h4>
+                <p>{t("Expire")}: {formatDate(v.inspection.expiryDate)}</p>
+                {v.inspection.alert && <Badge color="red">{v.inspection.alert}</Badge>}
+              </div>
+
+              {/* Bouton modifier */}
+              <div className="flex justify-end">
+                <Button size="sm" onClick={() => openEdit(v)}>
+                  {t("Modifier")}
+                </Button>
+              </div>
+            </Card>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
