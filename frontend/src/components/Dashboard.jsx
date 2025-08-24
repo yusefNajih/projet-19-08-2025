@@ -231,27 +231,26 @@ const Dashboard = () => {
           <CardContent>
             <div className="h-[200px] flex items-center justify-center">
               <ResponsiveContainer width="100%" height={200}>
-                <PieChart>
-                  <Pie
-                    data={vehiclePieData}
-                    dataKey="value"
-                    nameKey="name"
-                    cx="50%"
-                    cy="50%"
-                    outerRadius={70}
-                    label
-                  >
-                    {vehiclePieData.map((entry, index) => (
-                      <Cell
-                        key={`cell-${index}`}
-                        fill={pieColors[index % pieColors.length]}
-                      />
-                    ))}
-                  </Pie>
-                  <Legend />
-                  <Tooltip />
-                </PieChart>
-              </ResponsiveContainer>
+  <BarChart
+    layout="vertical"
+    data={vehiclePieData}
+    margin={{ top: 10, right: 20, left: 40, bottom: 10 }}
+  >
+    <CartesianGrid strokeDasharray="3 3" />
+    <XAxis type="number" />
+    <YAxis type="category" dataKey="name" />
+    <Tooltip />
+    <Bar dataKey="value" radius={[4, 4, 0, 0]}>
+      {vehiclePieData.map((entry, index) => (
+        <Cell
+          key={`cell-${index}`}
+          fill={pieColors[index % pieColors.length]}
+        />
+      ))}
+    </Bar>
+  </BarChart>
+</ResponsiveContainer>
+
             </div>
           </CardContent>
         </Card>
