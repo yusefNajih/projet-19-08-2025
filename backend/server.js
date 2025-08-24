@@ -29,8 +29,22 @@ app.use(limiter);
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// --- Static files ---
-app.use('/uploads', express.static('uploads'));
+// // Autoriser CORS sur les fichiers statiques (images)
+// app.use('/uploads', (req, res, next) => {
+//   res.header('Access-Control-Allow-Origin', '*');
+//   next();
+// });
+// // app.use('/uploads', express.static('uploads'));
+// // --- Static files ---
+// app.use('/uploads', express.static('uploads'));
+// --- Static files (images avec CORS et CORP) ---
+app.use('/uploads', express.static('uploads', {
+  setHeaders: (res, path, stat) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+  }
+}));
+
 
 // --- Database connection ---
 mongoose.connect(process.env.MONGODB_URI)
